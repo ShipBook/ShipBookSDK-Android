@@ -1,0 +1,30 @@
+{
+  "appenders" :
+  [{
+    "type" : "ConsoleAppender",
+    "name" : "console",
+    "config" : {
+      "pattern" : "$message"
+    }
+  },
+    {
+      "type" : "SBCloudAppender",
+      "name" : "cloud",
+      "config" :
+      {
+        "maxTime" : 5,
+        "flushSeverity" : "Warning"
+      }
+    }],
+  "loggers" :
+  [{
+    "name" : "",
+    "severity" : "Verbose",
+    "appenderRef" : "console"
+  },
+    {
+      "name" : "",
+      "severity" : "Verbose",
+      "appenderRef" : "cloud"
+    }]
+}
