@@ -11,7 +11,7 @@ ext {
     libraryDescription = 'ShipBook is the premier logging platform for mobile developers.'
 
     siteUrl = 'https://shipbook.io'
-    githubRepository = 'git@bitbucket.org:shipbook/android.git'
+    githubRepository = 'https://github.com/ShipBook/ShipBookSDK-Android'
     gitUrl = 'git@bitbucket.org:shipbook/android.git'
 
     libraryVersion = '0.1.0'
@@ -23,7 +23,7 @@ ext {
     organization = "shipbook"
 
     licenseName = 'MIT'
-    licenseUrl = 'https://opensource.org/licenses/MIT'
+    licenseUrl = 'https://github.com/ShipBook/ShipBookSDK-Android/blob/master/LICENSE'
     allLicenses = ["MIT"]
 }
 

@@ -4,7 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ShipBook.iml" filepath="$PROJECT_DIR$/ShipBook.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/shipbooksdk/ShipBookSDK.iml" filepath="$PROJECT_DIR$/shipbooksdk/ShipBookSDK.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shipbooksdk/shipbooksdk.iml" filepath="$PROJECT_DIR$/shipbooksdk/shipbooksdk.iml" />
     </modules>
   </component>
 </project>
