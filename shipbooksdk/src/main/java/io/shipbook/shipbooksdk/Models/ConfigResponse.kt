@@ -61,10 +61,14 @@ internal data class ConfigResponse(val appenders: List<AppenderResponse>,
                 val type: String = json.getString("type")
                 val name: String = json.getString("name")
 
-                val config: MutableMap<String, String> =  mutableMapOf()
-                val configObject = json.getJSONObject("config")
-                configObject.keys().forEach {
-                    config.set(it, configObject.getString(it))
+
+                var config: MutableMap<String, String>? = null
+                if (json.has("config")) {
+                    config = mutableMapOf()
+                    val configObject = json.getJSONObject("config")
+                    configObject.keys().forEach {
+                        config.set(it, configObject.getString(it))
+                    }
                 }
 
                 return AppenderResponse(type, name, config)
@@ -74,11 +78,13 @@ internal data class ConfigResponse(val appenders: List<AppenderResponse>,
             val json = JSONObject()
             json.put("type", type)
             json.put("name", name)
-            val configObject = JSONObject()
-            config?.entries?.forEach {
-                configObject.put(it.key, it.value)
+            config?.let { config ->
+                val configObject = JSONObject()
+                config.entries.forEach {
+                    configObject.put(it.key, it.value)
+                }
+                json.put("config", configObject)
             }
-            json.put("config", configObject)
             return json
         }
     }

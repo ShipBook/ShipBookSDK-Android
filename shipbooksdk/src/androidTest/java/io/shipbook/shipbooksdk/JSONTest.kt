@@ -57,6 +57,24 @@ class JSONTest {
     }
 
     @Test
+    fun appenderResponseNoConfig() {
+        val appenderString = """
+            {
+              "type" : "ConsoleAppender",
+              "name" : "console"
+            }
+            """
+        val appenderResponse = ConfigResponse.AppenderResponse.create(JSONObject(appenderString))
+        assertNotNull(appenderResponse)
+        assertEquals(appenderResponse.name, "console")
+        assertEquals(appenderResponse.type, "ConsoleAppender")
+        assertNull(appenderResponse.config)
+
+        val appenderResponse2 = ConfigResponse.AppenderResponse.create(appenderResponse.toJson())
+        assertEquals(appenderResponse, appenderResponse2)
+    }
+
+    @Test
     fun loggerResponse() {
         val loggerString = """
             {

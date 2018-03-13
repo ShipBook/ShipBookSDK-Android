@@ -131,7 +131,7 @@ bintray {
         licenses = allLicenses
         githubRepo = githubRepository //Optional Github repository
         githubReleaseNotesFile = 'README.md' //Optional Github readme file
-        publish = false
+        publish = true
         publicDownloadNumbers = true
         version {
             desc = libraryDescription
