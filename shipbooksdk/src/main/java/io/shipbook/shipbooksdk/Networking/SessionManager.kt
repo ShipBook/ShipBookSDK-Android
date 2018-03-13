@@ -117,7 +117,7 @@ internal object SessionManager {
     private fun readConfig(configString: String) {
         val config = ConfigResponse.create(JSONObject(configString))
 
-        if (!config.crashReportDisabled) ExceptionManager.start()
+        if (!config.exceptionReportDisabled) ExceptionManager.start()
         if (!config.eventLoggingDisabled) EventManager.start()
 
         LogManager.config(config)

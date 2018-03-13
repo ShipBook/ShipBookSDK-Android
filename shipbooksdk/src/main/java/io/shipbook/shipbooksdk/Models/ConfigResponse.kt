@@ -14,7 +14,7 @@ import org.json.JSONObject
 internal data class ConfigResponse(val appenders: List<AppenderResponse>,
                                    val loggers: List<LoggerResponse>,
                                    val eventLoggingDisabled: Boolean = false,
-                                   val crashReportDisabled: Boolean = false): BaseObj {
+                                   val exceptionReportDisabled: Boolean = false): BaseObj {
     companion object {
         fun create(json: JSONObject): ConfigResponse {
             val appendersArray = json.getJSONArray("appenders")
@@ -31,8 +31,8 @@ internal data class ConfigResponse(val appenders: List<AppenderResponse>,
                 loggers.add(loggersResponse)
             }
             val eventLoggingDisabled = json.optBoolean("eventLoggingDisabled")
-            val crashReportDisabled = json.optBoolean("crashReportDisabled")
-            return ConfigResponse(appenders, loggers, eventLoggingDisabled, crashReportDisabled)
+            val exceptionReportDisabled = json.optBoolean("exceptionReportDisabled")
+            return ConfigResponse(appenders, loggers, eventLoggingDisabled, exceptionReportDisabled)
         }
     }
 
@@ -51,7 +51,7 @@ internal data class ConfigResponse(val appenders: List<AppenderResponse>,
         json.put("loggers", loggersArray)
 
         json.put("eventLoggingDisabled", eventLoggingDisabled)
-        json.put("crashReportDisabled", crashReportDisabled)
+        json.put("exceptionReportDisabled", exceptionReportDisabled)
         return json
     }
 
