@@ -11,7 +11,7 @@ internal object AppenderFactory {
     fun create(type: String, name: String, config: Config?) : BaseAppender? {
         when (type) {
             "ConsoleAppender" -> return ConsoleAppender(name, config)
-            "SBCloudAppender" -> return SBCloudAppender(name, config)
+            "SBCloudAppender", "SLCloudAppender" -> return SBCloudAppender(name, config)
             else -> return null
         }
     }
