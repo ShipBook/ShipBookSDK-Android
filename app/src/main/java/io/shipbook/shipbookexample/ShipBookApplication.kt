@@ -11,10 +11,11 @@ import io.shipbook.shipbooksdk.ShipBook
  */
 
 class ShipBookApplication : Application() {
+    val log = ShipBook.getLogger("ShipBookApplication")
     @Override
     override fun onCreate() {
         super.onCreate()
-
         ShipBook.start(this,"YOUR_APPID", "YOUR_APPKEY")
+        log.d("started log")
     }
 }

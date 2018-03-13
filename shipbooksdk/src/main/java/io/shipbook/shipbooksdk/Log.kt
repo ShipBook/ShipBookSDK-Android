@@ -9,6 +9,8 @@ import io.shipbook.shipbooksdk.Models.Message
 import io.shipbook.shipbooksdk.Models.Severity
 import io.shipbook.shipbooksdk.Networking.SessionManager
 import io.shipbook.shipbooksdk.Util.toInternal
+import java.util.*
+import kotlin.concurrent.schedule
 
 /*
  *
@@ -72,8 +74,11 @@ class Log(val tag: String)  {
 
     init {
         InnerLog.d(TAG, "register broadcast receiver" )
-        LocalBroadcastManager.getInstance(SessionManager.appContext)
-                .registerReceiver(broadcastReceiver, IntentFilter(BroadcastNames.CONFIG_CHANGE))
+        if (SessionManager.appContext != null) addBroadcastReceiver()
+        else Timer().schedule(0) { //for the case that the application has a getLogger then it will be initialized before the start
+            addBroadcastReceiver()
+        }
+
     }
 
     protected fun finalize() {
@@ -81,6 +86,11 @@ class Log(val tag: String)  {
         LocalBroadcastManager.getInstance(SessionManager.appContext).unregisterReceiver(broadcastReceiver)
     }
 
+    @Suppress("NOTHING_TO_INLINE")
+    private inline fun addBroadcastReceiver() {
+        LocalBroadcastManager.getInstance(SessionManager.appContext)
+                .registerReceiver(broadcastReceiver, IntentFilter(BroadcastNames.CONFIG_CHANGE))
+    }
 
 
     @JvmOverloads
