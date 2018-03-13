@@ -34,6 +34,7 @@ internal object InnerLog {
     }
 
     fun message(tag:String, msg: String, severity: Severity, throwable: Throwable?) {
+        if (!enabled) return
         val message = "======== $msg"
         if (throwable != null) {
             when (severity) {
