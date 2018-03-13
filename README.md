@@ -16,7 +16,7 @@ ShipBook works with min sdk version 19 (KITKAT)
 ## Installation
 
 ShipBookSDK is available through jcentral. To install
-it, simply add the following line to your build.gradle in the dependencies: `implementation 'io.shipbook.shipbooksdk:shipbooksdk:0.1.1'`
+it, simply add the following line to your build.gradle in the dependencies: `implementation 'io.shipbook.shipbooksdk:shipbooksdk:0.1.2'`
 
 ---
 ##  Using ShipBook
