@@ -212,15 +212,8 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
     }
 
     private fun push(event: BaseEvent) {
-        if (flushSeverity.ordinal < Severity.Info.ordinal) { // events are the same severity as severity info
-            flushQueue.add(event)
-            if (flushQueue.size > flushSize) flushQueue.remove()
-        }
-        else { // the info needs to be flushed and saved
-            saveFlushQueue()
-            saveToFile(event)
-            createTimer()
-        }
+        flushQueue.add(event)
+        if (flushQueue.size > flushSize) flushQueue.remove()
     }
 
     private fun push(exception: io.shipbook.shipbooksdk.Models.Exception) {
