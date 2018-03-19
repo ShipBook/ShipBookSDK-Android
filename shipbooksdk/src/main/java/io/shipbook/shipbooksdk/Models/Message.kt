@@ -54,7 +54,7 @@ internal data class Message(val tag: String,
             val element = thread.stackTrace.firstOrNull {
                 !it.className.startsWith("dalvik.") &&
                         !it.className.startsWith("java.") &&
-                        !it.className.startsWith("io.shipbook.ShipBookSDK")
+                        !it.className.startsWith("io.shipbook.shipkooksdk")
             }
 
             function = element?.methodName
