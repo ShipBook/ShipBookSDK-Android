@@ -21,7 +21,7 @@ val CompoundButton.onCheckedChangeListener : CompoundButton.OnCheckedChangeListe
 
             if (listenerField != null) {
                 listenerField.isAccessible = true
-                retrievedListener = listenerField.get(this) as CompoundButton.OnCheckedChangeListener
+                retrievedListener = listenerField.get(this) as? CompoundButton.OnCheckedChangeListener
             }
         } catch (ex: NoSuchFieldException) {
             InnerLog.e("Reflection", "No Such Field.")

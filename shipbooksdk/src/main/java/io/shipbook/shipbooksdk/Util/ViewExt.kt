@@ -31,7 +31,7 @@ val View.onClickListener : View.OnClickListener?
                 val clickListenerField = Class.forName(lInfoStr).getDeclaredField("mOnClickListener")
 
                 if (clickListenerField != null && listenerInfo != null) {
-                    retrievedListener = clickListenerField.get(listenerInfo) as View.OnClickListener
+                    retrievedListener = clickListenerField.get(listenerInfo) as? View.OnClickListener
                 }
             } catch (ex: NoSuchFieldException) {
                 InnerLog.e("Reflection", "No Such Field.")

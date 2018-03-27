@@ -21,7 +21,7 @@ val SeekBar.onSeekBarChangeListener : SeekBar.OnSeekBarChangeListener?
 
             if (listenerField != null) {
                 listenerField.isAccessible = true
-                retrievedListener = listenerField.get(this) as SeekBar.OnSeekBarChangeListener
+                retrievedListener = listenerField.get(this) as? SeekBar.OnSeekBarChangeListener
             }
         } catch (ex: NoSuchFieldException) {
             InnerLog.e("Reflection", "No Such Field.")
