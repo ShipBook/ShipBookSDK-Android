@@ -185,7 +185,7 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
     private fun createTimer() {
         if (timer != null) return
         InnerLog.d(TAG, "the current time $maxTime")
-        timer = Timer()
+        timer = Timer(true)
         timer?.schedule(timerTask { timer = null; send() }, (maxTime * 1000).toLong())
     }
 
