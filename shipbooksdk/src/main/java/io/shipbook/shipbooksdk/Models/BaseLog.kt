@@ -33,6 +33,7 @@ internal abstract class BaseLog(val type: String,
                 "fragmentEvent" -> FragmentEvent.create(json, orderId, time, threadInfo)
                 "configEvent" -> ConfigEvent.create(json, orderId, time, threadInfo)
                 "actionEvent" -> ActionEvent.create(json, orderId, time, threadInfo)
+                "screenEvent" -> ScreenEvent.create(json, orderId, time, threadInfo)
                 "exception" -> Exception.create(json, orderId, time, threadInfo)
                 else -> throw Error("There doesn't exist this type")
             }

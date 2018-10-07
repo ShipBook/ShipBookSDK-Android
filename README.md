@@ -90,6 +90,15 @@ To logout the user, add the following code to your app’s logout function.
 ShipBook.logout();
 ```
 
+### Screen
+
+To log the user’s screen information, add the following code
+```java
+ShipBook.screen(name: "SCREEN_NAME")
+```
+
+
+
 ---
 
 

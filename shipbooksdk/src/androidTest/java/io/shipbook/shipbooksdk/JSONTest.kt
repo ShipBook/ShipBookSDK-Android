@@ -190,6 +190,14 @@ class JSONTest {
     }
 
     @Test
+    fun screenEvent() {
+        val screenEvent = ScreenEvent("test")
+        val baseLog = BaseLog.create(screenEvent.toJson()) as ScreenEvent
+        assertEquals(screenEvent, baseLog)
+    }
+
+
+    @Test
     fun configEvent() {
         val configEvent = ConfigEvent(Orientation.Landscape)
         val baseLog = BaseLog.create(configEvent.toJson()) as ConfigEvent

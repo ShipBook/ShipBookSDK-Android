@@ -21,19 +21,11 @@ public class SecondActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
-        ShipBook.registerUser("androidUser2", null, null,"androidUser2@androidUser.com");
-
+        ShipBook.screen("second screen");
         log.e("error message");
         log.w("warning message");
         log.i("info message");
         log.d("debug message");
         log.v("verbose message");
-
-        try {
-            throw new Exception("empty info");
-        }
-        catch (Exception e) {
-            Log.d("exception","test", e);
-        }
     }
 }

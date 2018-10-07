@@ -1,6 +1,7 @@
 package io.shipbook.shipbooksdk
 
 import android.app.Application
+import io.shipbook.shipbooksdk.Models.ScreenEvent
 import io.shipbook.shipbooksdk.Networking.ConnectionClient
 
 import io.shipbook.shipbooksdk.Networking.SessionManager
@@ -51,6 +52,12 @@ class ShipBook {
         @JvmStatic
         fun logout() {
             SessionManager.logout()
+        }
+
+        @JvmStatic
+        fun screen(name: String) {
+            val event = ScreenEvent(name)
+            LogManager.push(event)
         }
     }
 }
