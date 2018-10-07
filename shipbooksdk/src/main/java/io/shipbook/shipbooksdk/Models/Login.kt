@@ -24,7 +24,7 @@ internal data class Login(
         val os: String = "android",
         //    val bundleIdentifier: String
         val appName: String = SessionManager.appContext!!.applicationInfo.processName,
-        val udid: String = Settings.Secure.getString(SessionManager.appContext!!.contentResolver, Settings.Secure.ANDROID_ID) ?: "",
+        val udid: String = Settings.Secure.getString(SessionManager.appContext!!.contentResolver, Settings.Secure.ANDROID_ID) ?: "test_device",
         val time: Date = Date(),
         var deviceTime: Date = time,
         val osVersion: String = Build.VERSION.RELEASE ?: "", // "" for testing
