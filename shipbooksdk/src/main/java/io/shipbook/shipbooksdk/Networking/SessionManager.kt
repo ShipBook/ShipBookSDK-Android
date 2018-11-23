@@ -8,12 +8,12 @@ import android.support.v4.content.LocalBroadcastManager
 import io.shipbook.shipbooksdk.*
 import io.shipbook.shipbooksdk.Events.EventManager
 import io.shipbook.shipbooksdk.Models.*
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.newSingleThreadContext
+import kotlinx.coroutines.*
 import org.json.JSONObject
 import java.io.File
 import java.io.InputStream
 import java.net.URI
+import kotlin.coroutines.CoroutineContext
 
 
 /*
@@ -28,7 +28,7 @@ import java.net.URI
 
 @SuppressLint("StaticFieldLeak")
 internal object SessionManager {
-    val threadContext = newSingleThreadContext("ShipBookThread")
+    val threadContext = Dispatchers.IO
 
     private val TAG = SessionManager::class.java.simpleName
     var application: Application? = null
@@ -82,7 +82,7 @@ internal object SessionManager {
         if (isInLoginRequest || login == null) return
         isInLoginRequest = true
         token = null
-        launch(threadContext) {
+        GlobalScope.launch(threadContext) {
             InnerLog.d(TAG, "current thread: ${Thread.currentThread().name}")
             val response = ConnectionClient.request("auth/loginSdk", login?.toJson().toString(), HttpMethod.POST)
             isInLoginRequest = false

@@ -12,7 +12,9 @@ import io.shipbook.shipbooksdk.Models.*
 import io.shipbook.shipbooksdk.Networking.ConnectionClient.request
 import io.shipbook.shipbooksdk.Networking.HttpMethod
 import io.shipbook.shipbooksdk.Networking.SessionManager
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.File
 import java.lang.Exception
@@ -190,7 +192,7 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
     }
 
     override fun push(log: BaseLog) {
-        launch(SessionManager.threadContext) {
+        GlobalScope.launch(SessionManager.threadContext) {
             when (log) {
                 is Message -> push(log)
                 is BaseEvent -> push(log)
@@ -264,7 +266,7 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
             // should be with current time and not with the original time that has nothing to do with it
             val currentTime = Date()
             sessionsData.forEach() { it.login?.deviceTime = currentTime}
-            launch(SessionManager.threadContext) {
+            GlobalScope.launch(SessionManager.threadContext) {
                 try {
                     val response = request("sessions/uploadSavedData", sessionsData, HttpMethod.POST)
                     if (response.ok) tempFile.delete()
