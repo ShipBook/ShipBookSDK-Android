@@ -23,12 +23,13 @@ import kotlin.coroutines.CoroutineContext
  *
  */
 
-
-
-
+@ObsoleteCoroutinesApi
 @SuppressLint("StaticFieldLeak")
 internal object SessionManager {
-    val threadContext = Dispatchers.IO
+    val threadContext = newSingleThreadContext("shipbook") // need this so that there is no problem of threading
+                                                                 // kotlin will redo this implementation in the future and then we will need to change
+                                                                 // the api. It might be that they will use the same api and then no changes will needed
+                                                                 // see https://github.com/Kotlin/kotlinx.coroutines/issues/261
 
     private val TAG = SessionManager::class.java.simpleName
     var application: Application? = null
