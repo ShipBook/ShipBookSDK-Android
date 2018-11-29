@@ -9,6 +9,6 @@ import org.json.JSONObject
  *
  */
 
-interface BaseObj {
+internal interface BaseObj {
     fun toJson(): JSONObject
 }

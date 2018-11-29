@@ -8,7 +8,7 @@ ext {
     libraryName = 'shipbooksdk'
     artifact = 'shipbooksdk'
 
-    libraryDescription = 'ShipBook is the premier logging platform for mobile developers.'
+    libraryDescription = 'ShipBook - A better way to analyze your mobile logs'
 
     siteUrl = 'https://shipbook.io'
     githubRepository = 'https://github.com/ShipBook/ShipBookSDK-Android'
@@ -55,8 +55,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
@@ -142,4 +142,13 @@ bintray {
             }
         }
     }
+}
+
+apply plugin: 'org.jetbrains.dokka-android'
+
+dokka {
+    outputFormat = 'html'
+    includes = ['README.md']
+    reportUndocumented = true
+    moduleName = 'shipbooksdk'
 }

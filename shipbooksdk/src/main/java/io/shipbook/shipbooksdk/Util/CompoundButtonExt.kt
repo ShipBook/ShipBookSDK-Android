@@ -10,7 +10,7 @@ import io.shipbook.shipbooksdk.InnerLog
  *
  */
 
-val CompoundButton.onCheckedChangeListener : CompoundButton.OnCheckedChangeListener?
+internal val CompoundButton.onCheckedChangeListener : CompoundButton.OnCheckedChangeListener?
     get() {
 
         var retrievedListener: CompoundButton.OnCheckedChangeListener? = null

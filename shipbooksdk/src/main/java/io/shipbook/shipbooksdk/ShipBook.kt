@@ -15,29 +15,66 @@ import java.net.URI
  *
  */
 
+/**
+ * The main class of the Shipbook SDK - A remote logging platform
+ */
 class ShipBook {
     companion object {
+        /**
+         * Starts the shipbook SDK should be called in `application(_:didFinishLaunchingWithOptions:)`
+         * @param appId The app id. You get it from https://console.shipbook.io.
+         * @param appKey The app key. You get it from https://console.shipbook.io.
+         * @param url The url of the server. By default it goes to the Shipboook production server.
+         */
         @JvmStatic
         @JvmOverloads
         fun start(application: Application, appId: String, appKey: String, uri: URI? = null) {
             SessionManager.login(application, appId, appKey, uri)
         }
 
+        /**
+         * Open the inner log. This function is for in the case that the SDK doesn't work and you need to understand why.
+         * @param enable if the innerlog should be enabled
+         */
         @JvmStatic
         fun enableInnerLog(enable: Boolean) {
             InnerLog.enabled = enable
         }
 
+        /**
+         * Change the url of the server.
+         * @param url: The url of the server. By default it goes to the Shipboook production server.
+         */
         @JvmStatic
         fun setConnectionUrl(url: String) {
             ConnectionClient.baseUrl = url
         }
 
+        /**
+         * Create a Log class
+         * @param tag The tag that the log class will use.
+         */
         @JvmStatic
         fun getLogger(tag: String): Log {
             return Log(tag)
         }
 
+        /**
+         * Register the user. This is to connect the user to this session.
+         *
+         * The best practice is to set registerUser before ShipBook.start. It will also work after this point however, it will require an additional api request.
+         *
+         * Be sure that you have concent from the user to save this information. In any case you can save only the userId and like
+         * this will be able to find in the console the logs for this user
+         *
+         * @param tag The tag that the log class will use.
+         * @param userId The user id in your app/system.
+         * @param userName The user name in you system. This is the parameter that the user logs in to you app/system.
+         * @param fullName The full name of the user.
+         * @param email The email of the user.
+         * @param phoneNumber The phone number of the user
+         *
+         */
         @JvmStatic
         @JvmOverloads
         fun registerUser(userId: String,
@@ -49,10 +86,21 @@ class ShipBook {
             SessionManager.registerUser(userId, userName, fullName, email, phoneNumber, additionalInfo)
         }
 
+        /**
+         * Logout the user. This will create after it a new session where the user isn't connected to it.
+         */
         @JvmStatic
         fun logout() {
             SessionManager.logout()
         }
+
+        /**
+         * Entered in a new screen.
+         *
+         * This will help you connect the logs to wich screen is open.
+         * The best practice is to add this code to viewWillAppear in the view controller.
+         * @param name The name of the new screen.
+         */
 
         @JvmStatic
         fun screen(name: String) {

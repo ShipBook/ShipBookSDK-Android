@@ -23,7 +23,6 @@ import kotlin.coroutines.CoroutineContext
  *
  */
 
-@ObsoleteCoroutinesApi
 @SuppressLint("StaticFieldLeak")
 internal object SessionManager {
     val threadContext = newSingleThreadContext("shipbook") // need this so that there is no problem of threading

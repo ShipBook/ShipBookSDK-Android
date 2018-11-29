@@ -13,7 +13,7 @@ import java.util.*
 
 private val TAG = DateHelper::class.java.simpleName
 private val sDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US)
-object DateHelper {
+internal object DateHelper {
     fun createDateStandard(string: String): Date? {
         try {
             return sDateFormat.parse(string)
@@ -26,6 +26,6 @@ object DateHelper {
 
 }
 
-fun Date.toStandardString(): String {
+internal fun Date.toStandardString(): String {
     return sDateFormat.format(this)
 }

@@ -16,7 +16,7 @@ import io.shipbook.shipbooksdk.Models.FragmentEvent
  *
  */
 
-object SupportFragmentEventCallbacks : FragmentManager.FragmentLifecycleCallbacks() {
+internal object SupportFragmentEventCallbacks : FragmentManager.FragmentLifecycleCallbacks() {
     private val TAG = SupportFragmentEventCallbacks::class.java.simpleName
 
     private fun createEvent(event: String, fragment: Fragment) {

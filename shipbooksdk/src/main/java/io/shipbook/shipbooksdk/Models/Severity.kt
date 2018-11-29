@@ -7,6 +7,32 @@ package io.shipbook.shipbooksdk.Models
  *
  */
 
+/**
+ * enum of severity
+ */
 enum class Severity {
-    Off, Error, Warning, Info, Debug, Verbose
+    /**
+     * Severity off
+     */
+    Off,
+    /**
+     * Error severity
+     */
+    Error,
+    /**
+     * Warning severity
+     */
+    Warning,
+    /**
+     * Info severity
+     */
+    Info,
+    /**
+     * Debug severity
+     */
+    Debug,
+    /**
+     * Verbose severity
+     */
+    Verbose
 }

@@ -10,7 +10,7 @@ import io.shipbook.shipbooksdk.InnerLog
  *
  */
 
-val SeekBar.onSeekBarChangeListener : SeekBar.OnSeekBarChangeListener?
+internal val SeekBar.onSeekBarChangeListener : SeekBar.OnSeekBarChangeListener?
     get() {
 
         var retrievedListener: SeekBar.OnSeekBarChangeListener? = null

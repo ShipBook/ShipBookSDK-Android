@@ -12,7 +12,7 @@ import io.shipbook.shipbooksdk.InnerLog
  *
  */
 
-val View.onClickListener : View.OnClickListener?
+internal val View.onClickListener : View.OnClickListener?
         @SuppressLint("PrivateApi")
         get(){
             var retrievedListener: View.OnClickListener? = null

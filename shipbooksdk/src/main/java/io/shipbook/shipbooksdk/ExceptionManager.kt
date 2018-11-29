@@ -10,7 +10,7 @@ import io.shipbook.shipbooksdk.Util.toInternal
  *
  */
 
-object ExceptionManager {
+internal object ExceptionManager {
     private val TAG = ExceptionManager::class.java.simpleName
     fun start(hasException: Boolean = true) {
         if (!hasException)

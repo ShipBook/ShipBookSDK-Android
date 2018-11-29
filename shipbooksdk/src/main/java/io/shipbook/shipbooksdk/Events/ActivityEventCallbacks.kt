@@ -19,7 +19,7 @@ import android.view.ViewGroup
  *
  */
 
-object  ActivityEventCallbacks : Application.ActivityLifecycleCallbacks {
+internal object  ActivityEventCallbacks : Application.ActivityLifecycleCallbacks {
     private val TAG = ActivityEventCallbacks::class.java.simpleName
     private fun createEvent(event: String, activity: Activity) {
         val activityEvent = ActivityEvent(activity.javaClass.name, event, activity.title.toString())
