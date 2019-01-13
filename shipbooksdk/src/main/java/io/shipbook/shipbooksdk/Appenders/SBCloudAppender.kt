@@ -52,15 +52,17 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
             when(intent.action) {
                 BroadcastNames.USER_CHANGE -> {
                     InnerLog.d(TAG, "received user change")
-                    val user = SessionManager.login?.user
-                    user?.let {
-                        saveToFile(it)
-                        createTimer()
+                    GlobalScope.launch(SessionManager.threadContext) {
+                        val user = SessionManager.login?.user
+                        user?.let {
+                            saveToFile(it)
+                            createTimer()
+                        }
                     }
                 }
                 BroadcastNames.CONNECTED -> {
                     InnerLog.d(TAG, "received connected")
-                    send()
+                    GlobalScope.launch(SessionManager.threadContext) { send() }
                 }
             }
         }
@@ -188,7 +190,7 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
         if (timer != null) return
         InnerLog.d(TAG, "the current time $maxTime")
         timer = Timer(true)
-        timer?.schedule(timerTask { timer = null; send() }, (maxTime * 1000).toLong())
+        timer?.schedule(timerTask { GlobalScope.launch(SessionManager.threadContext) { timer = null; send() }}, (maxTime * 1000).toLong())
     }
 
     override fun push(log: BaseLog) {
@@ -223,7 +225,7 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
         saveToFile(exception)
     }
 
-    private fun send() {
+    private suspend fun send() {
         timer?.let { it.cancel(); timer = null}
         if (uploadingSavedData) {
             InnerLog.d(TAG,"uploading saved data")
@@ -266,22 +268,21 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
             // should be with current time and not with the original time that has nothing to do with it
             val currentTime = Date()
             sessionsData.forEach() { it.login?.deviceTime = currentTime}
-            GlobalScope.launch(SessionManager.threadContext) {
-                try {
-                    val response = request("sessions/uploadSavedData", sessionsData, HttpMethod.POST)
-                    if (response.ok) tempFile.delete()
-                    else {
-                        InnerLog.i(TAG, "server probably down")
-                        concatTmpFile()
-                    }
+            try {
+                val response = request("sessions/uploadSavedData", sessionsData, HttpMethod.POST)
+                if (response.ok) tempFile.delete()
+                else {
+                    InnerLog.i(TAG, "server probably down")
+                    concatTmpFile()
+                }
 
-                    uploadingSavedData = false
-                }
-                catch (e: Exception) {
-                    InnerLog.e(TAG, "Had an error in send", e)
-                    uploadingSavedData = false
-                }
+                uploadingSavedData = false
             }
+            catch (e: Exception) {
+                InnerLog.e(TAG, "Had an error in send", e)
+                uploadingSavedData = false
+            }
+
         }
         catch (e: Exception) {
             InnerLog.e(TAG, "Had an error in send", e)
