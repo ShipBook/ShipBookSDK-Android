@@ -111,6 +111,10 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
 
     fun saveToFile(obj: BaseObj) {
         try {
+            if (file.length() > maxFileSize) {
+                file.delete()
+                hasLog = false
+            }
             if (!hasLog) {
                 if (SessionManager.token != null) {
                     val line = TOKEN + FILE_CLASS_SEPARATOR + SessionManager.token + NEW_LINE_SEPARATOR
