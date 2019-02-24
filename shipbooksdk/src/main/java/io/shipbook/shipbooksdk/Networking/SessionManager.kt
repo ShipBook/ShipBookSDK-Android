@@ -62,20 +62,26 @@ internal object SessionManager {
         }
 
     fun login(application: Application, appId: String, appKey: String, userConfig: URI?) {
-        this.application = application
-        configFile = File(appContext?.filesDir, "config.json")
-        when {
-            configFile!!.isFile() -> readConfig(configFile!!)
-            userConfig != null -> {
-                val config = File(userConfig)
-                readConfig(config)
+        try {
+            this.application = application
+            configFile = File(appContext?.filesDir, "config.json")
+            when {
+                configFile!!.isFile() && configFile!!.length() > 0 -> readConfig(configFile!!)
+                userConfig != null -> {
+                    val config = File(userConfig)
+                    readConfig(config)
+                }
+                else -> readConfig(appContext!!.resources.openRawResource(R.raw.config))
             }
-            else -> readConfig(appContext!!.resources.openRawResource(R.raw.config))
+
+            this.appKey = appKey
+            login = Login(appId, appKey)
+            innerLogin()
+        }
+        catch (t: Throwable) {
+            InnerLog.e(TAG, "login file failed", t)
         }
 
-        this.appKey = appKey
-        login = Login(appId, appKey)
-        innerLogin()
     }
 
     private fun innerLogin() {
