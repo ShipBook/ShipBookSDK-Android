@@ -9,19 +9,21 @@ import org.json.JSONObject
  *
  */
 
-internal data class LoginResponse(val token: String, val config: ConfigResponse): BaseObj {
+internal data class LoginResponse(val token: String, val config: ConfigResponse, val sessionUrl: String): BaseObj {
 
     companion object {
         fun create(json: JSONObject): LoginResponse {
             val token = json.getString("token")
             val config = ConfigResponse.create(json.getJSONObject("config"))
-            return LoginResponse(token, config)
+            val sessionUrl = json.getString("sessionUrl")
+            return LoginResponse(token, config, sessionUrl)
         }
     }
     override fun toJson(): JSONObject {
         val json = JSONObject()
         json.put("token", token)
         json.put("config", config.toJson())
+        json.put("sessionUrl", sessionUrl)
         return json
     }
 }

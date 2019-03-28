@@ -24,12 +24,13 @@ class ShipBook {
          * Starts the shipbook SDK should be called in `application(_:didFinishLaunchingWithOptions:)`
          * @param appId The app id. You get it from https://console.shipbook.io.
          * @param appKey The app key. You get it from https://console.shipbook.io.
-         * @param url The url of the server. By default it goes to the Shipboook production server.
+         * @param completion a completion of start callback so that you'll be able to get the sessionUrl if needed for 3rd party integration
+         * @param uri The url of the server. By default it goes to the Shipboook production server.
          */
         @JvmStatic
         @JvmOverloads
-        fun start(application: Application, appId: String, appKey: String, uri: URI? = null) {
-            SessionManager.login(application, appId, appKey, uri)
+        fun start(application: Application, appId: String, appKey: String, completion: ((String)->Unit)? = null, uri: URI? = null) {
+            SessionManager.login(application, appId, appKey, completion, uri)
         }
 
         /**
@@ -67,12 +68,12 @@ class ShipBook {
          * Be sure that you have concent from the user to save this information. In any case you can save only the userId and like
          * this will be able to find in the console the logs for this user
          *
-         * @param tag The tag that the log class will use.
          * @param userId The user id in your app/system.
          * @param userName The user name in you system. This is the parameter that the user logs in to you app/system.
          * @param fullName The full name of the user.
          * @param email The email of the user.
-         * @param phoneNumber The phone number of the user
+         * @param phoneNumber The phone number of the user.
+         * @param additionalInfo Additional info of the user.
          *
          */
         @JvmStatic

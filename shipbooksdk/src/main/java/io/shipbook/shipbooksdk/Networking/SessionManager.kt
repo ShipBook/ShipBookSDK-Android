@@ -37,6 +37,8 @@ internal object SessionManager {
     @Volatile
     var token: String? = null
 
+    var sessionCompletion: ((String)->Unit)? = null
+
     private var appKey: String? = null
     private var _login: Login? = null
     var login: Login?
@@ -61,7 +63,7 @@ internal object SessionManager {
             return false
         }
 
-    fun login(application: Application, appId: String, appKey: String, userConfig: URI?) {
+    fun login(application: Application, appId: String, appKey: String, completion: ((String)->Unit)?, userConfig: URI?) {
         try {
             this.application = application
             configFile = File(appContext?.filesDir, "config.json")
@@ -75,6 +77,7 @@ internal object SessionManager {
             }
 
             this.appKey = appKey
+            this.sessionCompletion = completion
             login = Login(appId, appKey)
             innerLogin()
         }
@@ -97,6 +100,8 @@ internal object SessionManager {
                     if (response.data == null) throw Exception("No Data error")
                     val loginResponse = LoginResponse.create(response.data)
                     token = loginResponse.token
+                    loginResponse.sessionUrl
+                    sessionCompletion?.invoke(loginResponse.sessionUrl)
                     LogManager.config(loginResponse.config)
                     configFile!!.writeText(loginResponse.config.toJson().toString())
                     LocalBroadcastManager.getInstance(appContext).sendBroadcast(Intent(BroadcastNames.CONNECTED))
