@@ -15,7 +15,7 @@ ShipBook works with min SDK version 19 (KITKAT)
 
 ShipBookSDK is available through jcentral. 
 
-To install it, simply add the following line to the dependencies in your build.gradle: `implementation 'io.shipbook.shipbooksdk:shipbooksdk:1.0.5'`
+To install it, simply add the following line to the dependencies in your build.gradle: `implementation 'io.shipbook.shipbooksdk:shipbooksdk:1.+'`
 
 ---
 ## Integrating Shipbook into your code
@@ -71,7 +71,14 @@ log.v("the log message"); // Verbose log
 ```
 
 ---
+## Enable Shipbook debug logging
+If your logs weren't uploaded to Shipbook, or you're experiencing some other issue with Shipbook, you can enable Shipbook debug logging to track down the problem.
 
+```java
+ShipBook.enableInnerLog(true);
+```
+
+---
 ## Linking Shipbook to a User’s Information
 The SDK allows the option to associate each session with specific user information.
 
@@ -97,10 +104,21 @@ To log the user’s screen information, add the following code
 ShipBook.screen(name: "SCREEN_NAME")
 ```
 
+## Integrating Shipbook with Crashlytics
+To integrate Shipbook with crashlytics just implement the completion callback of `ShipBook.start` as following:
 
+```java
+ShipBook.start(this,"YOUR_APP_ID", "YOUR_APP_KEY", (sessionUrl)-> {
+            Crashlytics.setString("shipbookSession", sessionUrl);
+            return Unit.INSTANCE;
+        });
+```
+
+(in Kotlin you don't need `return Unit.INSTANCE`)
+
+Now you'll have in crashlytics a link to the logs of the specific session. The link is in the Keys tab of the a specific crash under the key `ShipbookSession`.
 
 ---
-
 
 ## Author
 
