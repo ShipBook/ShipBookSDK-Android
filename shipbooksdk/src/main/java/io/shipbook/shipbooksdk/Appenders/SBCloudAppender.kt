@@ -90,13 +90,13 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
         val intentFilter = IntentFilter()
         intentFilter.addAction(BroadcastNames.USER_CHANGE)
         intentFilter.addAction(BroadcastNames.CONNECTED)
-        LocalBroadcastManager.getInstance(SessionManager.appContext).registerReceiver(broadcastReceiver, intentFilter)
+        LocalBroadcastManager.getInstance(context!!).registerReceiver(broadcastReceiver, intentFilter)
     }
 
     @Suppress("unused")
     protected fun finalize() {
         InnerLog.d(TAG, "unregister broadcast receiver" )
-        LocalBroadcastManager.getInstance(SessionManager.appContext).unregisterReceiver(broadcastReceiver)
+        LocalBroadcastManager.getInstance(SessionManager.appContext!!).unregisterReceiver(broadcastReceiver)
     }
 
 

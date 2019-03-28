@@ -99,6 +99,6 @@ internal object LogManager {
         this.appenders = appenders
         this.loggers = loggers
 
-        LocalBroadcastManager.getInstance(SessionManager.appContext).sendBroadcast(Intent(BroadcastNames.CONFIG_CHANGE))
+        LocalBroadcastManager.getInstance(SessionManager.appContext!!).sendBroadcast(Intent(BroadcastNames.CONFIG_CHANGE))
     }
 }

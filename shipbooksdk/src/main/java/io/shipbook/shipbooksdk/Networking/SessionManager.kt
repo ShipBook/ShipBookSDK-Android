@@ -104,7 +104,7 @@ internal object SessionManager {
                     sessionCompletion?.invoke(loginResponse.sessionUrl)
                     LogManager.config(loginResponse.config)
                     configFile!!.writeText(loginResponse.config.toJson().toString())
-                    LocalBroadcastManager.getInstance(appContext).sendBroadcast(Intent(BroadcastNames.CONNECTED))
+                    LocalBroadcastManager.getInstance(appContext!!).sendBroadcast(Intent(BroadcastNames.CONNECTED))
                 }
                 catch (e: Throwable) {
                     InnerLog.e(TAG, "There was a problem with the data", e)
@@ -141,7 +141,7 @@ internal object SessionManager {
                      phoneNumber: String?,
                      additionalInfo: Map<String, String>) {
         user = User(userId, userName, fullName, email, phoneNumber, additionalInfo)
-        if (login != null) LocalBroadcastManager.getInstance(appContext).sendBroadcast(Intent(BroadcastNames.USER_CHANGE))
+        if (login != null) LocalBroadcastManager.getInstance(appContext!!).sendBroadcast(Intent(BroadcastNames.USER_CHANGE))
     }
 
     fun logout() {

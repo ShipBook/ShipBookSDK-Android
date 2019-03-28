@@ -53,7 +53,7 @@ class Log(val tag: String)  {
          * Error message
          * @param tag The tag.
          * @param msg The message.
-         * @param trowable If there is a log throwable.
+         * @param throwable If there is a log throwable.
          */
         @JvmStatic
         @JvmOverloads
@@ -65,7 +65,7 @@ class Log(val tag: String)  {
          * Warning message
          * @param tag The tag.
          * @param msg The message.
-         * @param trowable If there is a log throwable.
+         * @param throwable If there is a log throwable.
          */
         @JvmStatic
         @JvmOverloads
@@ -77,7 +77,7 @@ class Log(val tag: String)  {
          * Information message
          * @param tag The tag.
          * @param msg The message.
-         * @param trowable If there is a log throwable.
+         * @param throwable If there is a log throwable.
          */
         @JvmStatic
         @JvmOverloads
@@ -89,7 +89,7 @@ class Log(val tag: String)  {
          * Debug message
          * @param tag The tag.
          * @param msg The message.
-         * @param trowable If there is a log throwable.
+         * @param throwable If there is a log throwable.
          */
         @JvmStatic
         @JvmOverloads
@@ -101,7 +101,7 @@ class Log(val tag: String)  {
          * Verbose message
          * @param tag The tag.
          * @param msg The message.
-         * @param trowable If there is a log throwable.
+         * @param throwable If there is a log throwable.
          */
         @JvmStatic
         @JvmOverloads
@@ -114,7 +114,7 @@ class Log(val tag: String)  {
          * @param tag The tag.
          * @param msg The message.
          * @param severity The log severity of the message.
-         * @param trowable If there is a log throwable.
+         * @param throwable If there is a log throwable.
          */
         @JvmStatic
         @JvmOverloads
@@ -137,12 +137,12 @@ class Log(val tag: String)  {
      */
     protected fun finalize() {
         InnerLog.d(TAG, "unregister broadcast receiver" )
-        LocalBroadcastManager.getInstance(SessionManager.appContext).unregisterReceiver(broadcastReceiver)
+        LocalBroadcastManager.getInstance(SessionManager.appContext!!).unregisterReceiver(broadcastReceiver)
     }
 
     @Suppress("NOTHING_TO_INLINE")
     private inline fun addBroadcastReceiver() {
-        LocalBroadcastManager.getInstance(SessionManager.appContext)
+        LocalBroadcastManager.getInstance(SessionManager.appContext!!)
                 .registerReceiver(broadcastReceiver, IntentFilter(BroadcastNames.CONFIG_CHANGE))
     }
 
@@ -150,7 +150,7 @@ class Log(val tag: String)  {
     /**
      * Error message
      * @param msg The message.
-     * @param trowable If there is a log throwable.
+     * @param throwable If there is a log throwable.
      */
     @JvmOverloads
     fun e(msg: String, throwable: Throwable? = null) {
@@ -160,7 +160,7 @@ class Log(val tag: String)  {
     /**
      * Warning message
      * @param msg The message.
-     * @param trowable If there is a log throwable.
+     * @param throwable If there is a log throwable.
      */
     @JvmOverloads
     fun w(msg: String, throwable: Throwable? = null) {
@@ -170,7 +170,7 @@ class Log(val tag: String)  {
     /**
      * Information message
      * @param msg The message.
-     * @param trowable If there is a log throwable.
+     * @param throwable If there is a log throwable.
      */
     @JvmOverloads
     fun i(msg: String, throwable: Throwable? = null) {
@@ -180,7 +180,7 @@ class Log(val tag: String)  {
     /**
      * Debug message
      * @param msg The message.
-     * @param trowable If there is a log throwable.
+     * @param throwable If there is a log throwable.
      */
     @JvmOverloads
     fun d(msg: String, throwable: Throwable? = null) {
@@ -190,7 +190,7 @@ class Log(val tag: String)  {
     /**
      * Verbose message
      * @param msg The message.
-     * @param trowable If there is a log throwable.
+     * @param throwable If there is a log throwable.
      */
     @JvmOverloads
     fun v(msg: String, throwable: Throwable? = null) {
@@ -201,7 +201,7 @@ class Log(val tag: String)  {
      * General message
      * @param msg The message.
      * @param severity The log severity of the message.
-     * @param trowable If there is a log throwable.
+     * @param throwable If there is a log throwable.
      */
     @JvmOverloads
     fun message(msg: String, severity: Severity, throwable: Throwable? = null) {
