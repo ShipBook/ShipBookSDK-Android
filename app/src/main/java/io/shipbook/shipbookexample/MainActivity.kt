@@ -24,6 +24,8 @@ class MainActivity : FragmentActivity() {
         log.i("info message")
         log.d("debug message")
         log.v("verbose message")
+
+        LogWrapper.d("wrapper", "wrapper debug message")
         ShipBook.screen("main screen")
 
         button.setOnClickListener {

@@ -1,6 +1,7 @@
 package io.shipbook.shipbooksdk
 
 import android.app.Application
+import io.shipbook.shipbooksdk.Models.Message
 import io.shipbook.shipbooksdk.Models.ScreenEvent
 import io.shipbook.shipbooksdk.Networking.ConnectionClient
 
@@ -100,6 +101,7 @@ class ShipBook {
          *
          * This will help you connect the logs to wich screen is open.
          * The best practice is to add this code to viewWillAppear in the view controller.
+         *
          * @param name The name of the new screen.
          */
 
@@ -108,5 +110,20 @@ class ShipBook {
             val event = ScreenEvent(name)
             LogManager.push(event)
         }
+
+        /**
+         * Adding wrapper class
+         *
+         * In the case that you have a wrapper class and you want that the logs will not right there
+         * class and line number
+         *
+         * @param className The name of the wrapper class.
+         */
+
+        @JvmStatic
+        fun addWrapperClass(name: String) {
+            Message.addIgnoreClass(name)
+        }
+
     }
 }

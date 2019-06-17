@@ -44,6 +44,9 @@ internal data class Message(val tag: String,
             val className = json.getString("className")
             return Message(tag, severity, message, stackTrace, null, exception, function, fileName, lineNumber, className, orderId, time, threadInfo)
         }
+
+        fun addIgnoreClass(name: String) { ignoreClasses += name }
+        val ignoreClasses = mutableListOf<String>("dalvik.", "java.", "io.shipbook.shipbooksdk");
     }
 
     init {
@@ -51,10 +54,8 @@ internal data class Message(val tag: String,
         if (fileName == null) {
 
             val thread = Thread.currentThread()
-            val element = thread.stackTrace.firstOrNull {
-                !it.className.startsWith("dalvik.") &&
-                        !it.className.startsWith("java.") &&
-                        !it.className.startsWith("io.shipbook.shipbooksdk")
+            val element = thread.stackTrace.firstOrNull { trace ->
+                ignoreClasses.firstOrNull { trace.className.startsWith(it) } == null
             }
 
             function = element?.methodName
