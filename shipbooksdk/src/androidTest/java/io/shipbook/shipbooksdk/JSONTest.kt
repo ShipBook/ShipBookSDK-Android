@@ -147,7 +147,7 @@ class JSONTest {
             }
         """
         val configResponse = ConfigResponse.create(JSONObject(configString))
-        val loginResponse = LoginResponse("testToken", configResponse)
+        val loginResponse = LoginResponse("testToken", configResponse, "")
         val loginResponse2 = LoginResponse.create(loginResponse.toJson())
         assertEquals(loginResponse, loginResponse2)
 
