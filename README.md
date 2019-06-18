@@ -101,7 +101,7 @@ ShipBook.logout();
 
 To log the user’s screen information, add the following code
 ```java
-ShipBook.screen(name: "SCREEN_NAME")
+ShipBook.screen("SCREEN_NAME")
 ```
 
 ## Using Wrappers with ShipBook
@@ -109,43 +109,7 @@ If you are already using some kind of a logging system, you may want to write wr
 
 You will need to add the wrapper class name to addWrapperClass 
 ```java
-ShipBook.addWrapperClass(name: LogWrapper.class.getName())
-```
- 
-When creating the wrapper on the logs, you will need to implement all the parameters of each log.
-
-For example a wrapper for `log.e()`:
-```swift
-func e(_ msg:String,
-       tag:String? = nil,
-       function: String = #function,
-       file: String = #file,
-       line: Int = #line) {
-  log.e(msg: msg, tag: tag, function: function,file: file,line: line)
-}
-```
-
-You can also implement the function that is receiving all the messages:  `message()`:
-
-```swift
-func e(_ msg:String,
-       tag:String? = nil,
-       function: String = #function,
-       file: String = #file,
-       line: Int = #line) {
-  log.message(msg: msg, severity: .Error, tag: tag, function: function,file: file,line: line)
-}
-```
-The severity is an enum:
-```swift
-enum Severity : Int {
-  case Off = 0
-  case Error
-  case Warning
-  case Info
-  case Debug
-  case Verbose
-}
+ShipBook.addWrapperClass(LogWrapper.class.getName())
 ```
 
 ## Integrating Shipbook with Crashlytics
