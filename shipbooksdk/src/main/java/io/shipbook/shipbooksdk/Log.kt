@@ -40,6 +40,8 @@ class Log(val tag: String)  {
     @Volatile
     private var callStackSeverity = LogManager.getCallStackSeverity(tag)
 
+    private var counter = 0
+
     private val broadcastReceiver =  object :  BroadcastReceiver() {
         override fun onReceive(contxt: Context?, intent: Intent?) {
             InnerLog.d(TAG, "got receiver configChange for tag $tag")
@@ -125,11 +127,7 @@ class Log(val tag: String)  {
 
     init {
         InnerLog.d(TAG, "register broadcast receiver" )
-        if (SessionManager.appContext != null) addBroadcastReceiver()
-        else Timer().schedule(0) { //for the case that the application has a getLogger then it will be initialized before the start
-            addBroadcastReceiver()
-        }
-
+        addBroadcastReceiver()
     }
 
     /**
@@ -137,13 +135,19 @@ class Log(val tag: String)  {
      */
     protected fun finalize() {
         InnerLog.d(TAG, "unregister broadcast receiver" )
-        LocalBroadcastManager.getInstance(SessionManager.appContext!!).unregisterReceiver(broadcastReceiver)
+        if (SessionManager.appContext != null)
+            LocalBroadcastManager.getInstance(SessionManager.appContext!!).unregisterReceiver(broadcastReceiver)
     }
 
-    @Suppress("NOTHING_TO_INLINE")
-    private inline fun addBroadcastReceiver() {
-        LocalBroadcastManager.getInstance(SessionManager.appContext!!)
-                .registerReceiver(broadcastReceiver, IntentFilter(BroadcastNames.CONFIG_CHANGE))
+    private fun addBroadcastReceiver() {
+        InnerLog.d(TAG, "add broadcast receiver with counter" + counter )
+        if (SessionManager.appContext != null && counter > 0) LocalBroadcastManager.getInstance(SessionManager.appContext!!)
+               .registerReceiver(broadcastReceiver, IntentFilter(BroadcastNames.CONFIG_CHANGE))
+        else Timer().schedule(0) { //for the case that the application has a getLogger then it will be initialized before the start
+            counter++
+            if (counter < 5) addBroadcastReceiver()
+            else InnerLog.d(TAG, "counter bigger than 5" )
+        }
     }
 
 
