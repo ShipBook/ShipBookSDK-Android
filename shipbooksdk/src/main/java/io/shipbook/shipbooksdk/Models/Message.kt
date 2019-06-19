@@ -46,15 +46,13 @@ internal data class Message(val tag: String,
         }
 
         fun addIgnoreClass(name: String) { ignoreClasses += name }
-        val ignoreClasses = mutableListOf<String>("dalvik.", "java.", "io.shipbook.shipbooksdk");
+        val ignoreClasses = mutableListOf("io.shipbook.shipbooksdk")
     }
 
     init {
         orderId = incrementOrderId(orderId)
         if (fileName == null) {
-
-            val thread = Thread.currentThread()
-            val element = thread.stackTrace.firstOrNull { trace ->
+            val element = Throwable().stackTrace.firstOrNull { trace ->
                 ignoreClasses.firstOrNull { trace.className.startsWith(it) } == null
             }
 
