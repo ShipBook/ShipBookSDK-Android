@@ -30,7 +30,7 @@ internal data class Login(
         val osVersion: String = Build.VERSION.RELEASE ?: "", // "" for testing
         var appVersion: String = "",
         var appVersionCode: Int = -1,
-        val sdkVersion: String = "1.2.2",
+        val sdkVersion: String = "1.2.3",
         val sdkVersionCode: Int = 1,
         val manufacturer: String = Build.MANUFACTURER ?: "", // "" for testing
         val deviceModel: String = Build.MODEL ?: "", // "" for testing
