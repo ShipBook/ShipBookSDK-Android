@@ -3,6 +3,8 @@ package io.shipbook.shipbookexample
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
+import io.shipbook.shipbooksdk.Log
+import io.shipbook.shipbooksdk.Models.Severity
 import io.shipbook.shipbooksdk.ShipBook
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -26,6 +28,7 @@ class MainActivity : FragmentActivity() {
         log.v("verbose message")
 
         LogWrapper.d("wrapper", "wrapper debug message")
+        Log.message("fullMessage", "debug message", Severity.Debug, null, "on", "main", 31, "MAIN")
         ShipBook.screen("main screen")
 
         button.setOnClickListener {

@@ -132,7 +132,7 @@ class Log(val tag: String)  {
                     fileName: String? = null,
                     lineNumber: Int? = null,
                     className: String? = null) {
-            Log(tag).message(msg, severity, throwable)
+            Log(tag).message(msg, severity, throwable, function, fileName, lineNumber, className)
         }
     }
 
