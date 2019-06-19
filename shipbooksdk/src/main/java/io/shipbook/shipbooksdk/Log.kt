@@ -117,10 +117,21 @@ class Log(val tag: String)  {
          * @param msg The message.
          * @param severity The log severity of the message.
          * @param throwable If there is a log throwable.
+         * @param function the function name
+         * @param fileName the fileName
+         * @param lineNumber the line number
+         * @param className the class name
          */
         @JvmStatic
         @JvmOverloads
-        fun message(tag:String, msg: String, severity: Severity, throwable: Throwable? = null) {
+        fun message(tag:String,
+                    msg: String,
+                    severity: Severity,
+                    throwable: Throwable? = null,
+                    function: String? = null,
+                    fileName: String? = null,
+                    lineNumber: Int? = null,
+                    className: String? = null) {
             Log(tag).message(msg, severity, throwable)
         }
     }
@@ -206,11 +217,22 @@ class Log(val tag: String)  {
      * @param msg The message.
      * @param severity The log severity of the message.
      * @param throwable If there is a log throwable.
+     * @param function the function name
+     * @param fileName the fileName
+     * @param lineNumber the line number
+     * @param className the class name
+
      */
     @JvmOverloads
-    fun message(msg: String, severity: Severity, throwable: Throwable? = null) {
+    fun message(msg: String,
+                severity: Severity,
+                throwable: Throwable? = null,
+                function: String? = null,
+                fileName: String? = null,
+                lineNumber: Int? = null,
+                className: String? = null) {
         if (severity.ordinal > this.severity.ordinal) return
-        val stackTrace = if (severity.ordinal <= callStackSeverity.ordinal) Thread.currentThread().stackTrace.toInternal() else null
-        LogManager.push(Message(tag, severity, msg, stackTrace, throwable))
+        val stackTrace = if (severity.ordinal <= callStackSeverity.ordinal) Throwable().stackTrace.toInternal() else null
+        LogManager.push(Message(tag, severity, msg, stackTrace, throwable, function, fileName, lineNumber, className))
     }
 }

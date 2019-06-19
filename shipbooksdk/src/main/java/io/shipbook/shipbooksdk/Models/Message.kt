@@ -19,11 +19,11 @@ internal data class Message(val tag: String,
                             val message: String,
                             val stackTrace: List<StackTraceElement>? = null,
                             val throwable: Throwable? = null,
-                            var exception: MessageException? = null,
                             var function: String? = null,
                             var fileName: String? = null,
                             var lineNumber: Int? = null,
                             var className: String? = null,
+                            var exception: MessageException? = null,
                             //for base class
                             override var orderId: Int = 0,
                             override val time: Date = Date(),
@@ -42,7 +42,7 @@ internal data class Message(val tag: String,
             val fileName = json.getString("fileName")
             val lineNumber = json.getInt("lineNumber")
             val className = json.getString("className")
-            return Message(tag, severity, message, stackTrace, null, exception, function, fileName, lineNumber, className, orderId, time, threadInfo)
+            return Message(tag, severity, message, stackTrace, null, function, fileName, lineNumber, className, exception, orderId, time, threadInfo)
         }
 
         fun addIgnoreClass(name: String) { ignoreClasses += name }
