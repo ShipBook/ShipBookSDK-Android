@@ -277,8 +277,13 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
                 val response = request("sessions/uploadSavedData", sessionsData, HttpMethod.POST)
                 if (response.ok) tempFile.delete()
                 else {
-                    InnerLog.i(TAG, "server probably down")
-                    concatTmpFile()
+                    if (response.statusCode == -1) {
+                        InnerLog.i(TAG, "probably no internet connection")
+                        concatTmpFile()
+                    }
+                    else {
+                        InnerLog.i(TAG, "got error from the server with status code:" + response.statusCode)
+                    }
                 }
 
                 uploadingSavedData = false
