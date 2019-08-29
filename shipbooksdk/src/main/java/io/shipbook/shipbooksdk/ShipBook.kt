@@ -84,7 +84,7 @@ class ShipBook {
                          fullName: String? = null,
                          email: String? = null,
                          phoneNumber: String? = null,
-                         additionalInfo: Map<String, String> = mutableMapOf()) {
+                         additionalInfo: Map<String, String>? = null) {
             SessionManager.registerUser(userId, userName, fullName, email, phoneNumber, additionalInfo)
         }
 
@@ -117,7 +117,7 @@ class ShipBook {
          * In the case that you have a wrapper class and you want that the logs will not right there
          * class and line number
          *
-         * @param className The name of the wrapper class.
+         * @param name The name of the wrapper class.
          */
 
         @JvmStatic

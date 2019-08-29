@@ -168,6 +168,15 @@ class JSONTest {
     }
 
     @Test
+    fun userWithAdditional() {
+        val user = User("test", email = "test@test.com", additionalInfo = mapOf("locataion" to "oslo"))
+        val user2 = User.create(user.toJson())
+        assertEquals(user, user2)
+    }
+
+
+
+    @Test
     fun sessionLogData() {
         val message = Message("test", Severity.Error, "message1")
         //val login = Login("idTest", "appTest")
@@ -207,9 +216,9 @@ class JSONTest {
     @Test
     fun exception() {
         val stackTrace = Thread.currentThread().stackTrace
-        val stackTraceList : ArrayList<io.shipbook.shipbooksdk.Models.StackTraceElement> = arrayListOf()
+        val stackTraceList : ArrayList<StackTraceElement> = arrayListOf()
         stackTrace.forEach {
-            val stackTraceElement = io.shipbook.shipbooksdk.Models.StackTraceElement(it.className, it.methodName, it.fileName, it.lineNumber)
+            val stackTraceElement = StackTraceElement(it.className, it.methodName, it.fileName, it.lineNumber)
             stackTraceList.add(stackTraceElement)
         }
 

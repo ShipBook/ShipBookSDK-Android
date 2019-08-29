@@ -22,7 +22,7 @@ import android.view.ViewGroup
 internal object  ActivityEventCallbacks : Application.ActivityLifecycleCallbacks {
     private val TAG = ActivityEventCallbacks::class.java.simpleName
     private fun createEvent(event: String, activity: Activity) {
-        var title = "unknown"
+        var title = ""
         activity.title?.let { title = it.toString() }
         val activityEvent = ActivityEvent(activity.javaClass.name, event, title)
         InnerLog.v(TAG, "added activity event: $activityEvent")

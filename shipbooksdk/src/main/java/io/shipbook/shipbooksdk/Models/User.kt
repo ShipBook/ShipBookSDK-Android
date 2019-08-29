@@ -14,7 +14,7 @@ internal data class User(val userId:String,
                          val fullName: String? = null,
                          val email: String? = null,
                          val phoneNumber: String? = null,
-                         val additionalInfo: Map<String,String> = mutableMapOf()): BaseObj {
+                         val additionalInfo: Map<String,String>? = null): BaseObj {
 
     companion object {
         fun create(json: JSONObject) : User {
@@ -23,10 +23,13 @@ internal data class User(val userId:String,
             val fullName = json.optString("fullName", null)
             val email = json.optString("email", null)
             val phoneNumber = json.optString("phoneNumber", null)
-            val additionalInfo: MutableMap<String, String> =  mutableMapOf()
-            val additionalInfoObject = json.getJSONObject("additionalInfo")
-            additionalInfoObject.keys().forEach {
-                additionalInfo.set(it, additionalInfoObject.getString(it))
+            var additionalInfo: MutableMap<String, String>? =  null
+            val additionalInfoObject = json.optJSONObject("additionalInfo")
+            if (additionalInfoObject != null) {
+                additionalInfo = mutableMapOf()
+                additionalInfoObject.keys().forEach {
+                    additionalInfo.set(it, additionalInfoObject.getString(it))
+                }
             }
             return User(userId, userName, fullName, email, phoneNumber, additionalInfo)
         }
@@ -39,11 +42,13 @@ internal data class User(val userId:String,
         json.putOpt("fullName", fullName)
         json.putOpt("email", email)
         json.putOpt("phoneNumber", phoneNumber)
-        val additionalInfoObject = JSONObject()
-        additionalInfo.entries.forEach {
-            additionalInfoObject.put(it.key, it.value)
+        if (additionalInfo != null) {
+            val additionalInfoObject = JSONObject()
+            additionalInfo.entries.forEach {
+                additionalInfoObject.put(it.key, it.value)
+            }
+            json.putOpt("additionalInfo", additionalInfoObject)
         }
-        json.putOpt("additionalInfo", additionalInfoObject)
 
         return json
     }

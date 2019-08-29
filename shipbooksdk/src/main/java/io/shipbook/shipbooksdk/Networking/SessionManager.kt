@@ -139,7 +139,7 @@ internal object SessionManager {
                      fullName: String?,
                      email: String?,
                      phoneNumber: String?,
-                     additionalInfo: Map<String, String>) {
+                     additionalInfo: Map<String, String>?) {
         user = User(userId, userName, fullName, email, phoneNumber, additionalInfo)
         if (login != null) LocalBroadcastManager.getInstance(appContext!!).sendBroadcast(Intent(BroadcastNames.USER_CHANGE))
     }
