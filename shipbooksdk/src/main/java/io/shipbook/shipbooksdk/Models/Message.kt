@@ -14,10 +14,10 @@ import java.util.*
  *
  */
 
-internal data class Message(val tag: String,
-                            val severity: Severity,
+internal data class Message(val severity: Severity,
                             val message: String,
-                            val stackTrace: List<StackTraceElement>? = null,
+                            var tag: String? = null,
+                            var stackTrace: List<StackTraceElement>? = null,
                             val throwable: Throwable? = null,
                             var function: String? = null,
                             var fileName: String? = null,
@@ -42,7 +42,7 @@ internal data class Message(val tag: String,
             val fileName = json.getString("fileName")
             val lineNumber = json.getInt("lineNumber")
             val className = json.getString("className")
-            return Message(tag, severity, message, stackTrace, null, function, fileName, lineNumber, className, exception, orderId, time, threadInfo)
+            return Message(severity, message, tag, stackTrace, null, function, fileName, lineNumber, className, exception, orderId, time, threadInfo)
         }
 
         fun addIgnoreClass(name: String) { ignoreClasses += name }
@@ -61,6 +61,9 @@ internal data class Message(val tag: String,
             lineNumber = element?.lineNumber
             className = element?.className
         }
+
+        if (tag == null) tag = className?.substringAfterLast('.')
+
 
         if (throwable != null) {
             val stackTrace = throwable.stackTrace.toInternal()

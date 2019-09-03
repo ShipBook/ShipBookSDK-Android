@@ -34,6 +34,7 @@ import kotlin.concurrent.schedule
  * @property tag The tag of the log
  */
 class Log(val tag: String)  {
+    @Suppress("PrivatePropertyName")
     private val TAG = Log::class.java.simpleName
     @Volatile
     private var severity = LogManager.getSeverity(tag)
@@ -59,7 +60,7 @@ class Log(val tag: String)  {
          */
         @JvmStatic
         @JvmOverloads
-        fun e(tag:String, msg: String, throwable: Throwable? = null) {
+        fun e(tag:String?, msg: String, throwable: Throwable? = null) {
             message(tag, msg, Severity.Error, throwable)
         }
 
@@ -71,7 +72,7 @@ class Log(val tag: String)  {
          */
         @JvmStatic
         @JvmOverloads
-        fun w(tag:String, msg: String, throwable: Throwable? = null) {
+        fun w(tag:String?, msg: String, throwable: Throwable? = null) {
             message(tag, msg, Severity.Warning, throwable)
         }
 
@@ -83,7 +84,7 @@ class Log(val tag: String)  {
          */
         @JvmStatic
         @JvmOverloads
-        fun i(tag:String, msg: String, throwable: Throwable? = null) {
+        fun i(tag:String?, msg: String, throwable: Throwable? = null) {
             message(tag, msg, Severity.Info, throwable)
         }
 
@@ -95,7 +96,7 @@ class Log(val tag: String)  {
          */
         @JvmStatic
         @JvmOverloads
-        fun d(tag:String, msg: String, throwable: Throwable? = null) {
+        fun d(tag:String?, msg: String, throwable: Throwable? = null) {
             message(tag, msg, Severity.Debug, throwable)
         }
 
@@ -107,7 +108,7 @@ class Log(val tag: String)  {
          */
         @JvmStatic
         @JvmOverloads
-        fun v(tag:String, msg: String, throwable: Throwable? = null) {
+        fun v(tag:String?, msg: String, throwable: Throwable? = null) {
             message(tag, msg, Severity.Verbose, throwable)
         }
 
@@ -124,7 +125,7 @@ class Log(val tag: String)  {
          */
         @JvmStatic
         @JvmOverloads
-        fun message(tag:String,
+        fun message(tag:String?,
                     msg: String,
                     severity: Severity,
                     throwable: Throwable? = null,
@@ -132,7 +133,20 @@ class Log(val tag: String)  {
                     fileName: String? = null,
                     lineNumber: Int? = null,
                     className: String? = null) {
-            Log(tag).message(msg, severity, throwable, function, fileName, lineNumber, className)
+            val message: Message
+            if (tag == null) {
+                message = Message(severity, msg, null, null, throwable, function, fileName, lineNumber, className)
+                val msgTag = message.tag ?: return
+                if (severity.ordinal > LogManager.getSeverity(msgTag).ordinal) return
+                val stackTrace = if (severity.ordinal <= LogManager.getCallStackSeverity(msgTag).ordinal) Throwable().stackTrace.toInternal() else null
+                message.stackTrace = stackTrace
+            }
+            else {
+                if (severity.ordinal > LogManager.getSeverity(tag).ordinal) return
+                val stackTrace = if (severity.ordinal <= LogManager.getCallStackSeverity(tag).ordinal) Throwable().stackTrace.toInternal() else null
+                message = Message(severity, msg, tag, stackTrace, throwable, function, fileName, lineNumber, className)
+            }
+            LogManager.push(message)
         }
     }
 
@@ -151,7 +165,7 @@ class Log(val tag: String)  {
     }
 
     private fun addBroadcastReceiver() {
-        InnerLog.d(TAG, "add broadcast receiver with counter" + counter )
+        InnerLog.d(TAG, "add broadcast receiver with counter $counter")
         if (SessionManager.appContext != null && counter > 0) LocalBroadcastManager.getInstance(SessionManager.appContext!!)
                .registerReceiver(broadcastReceiver, IntentFilter(BroadcastNames.CONFIG_CHANGE))
         else Timer().schedule(0) { //for the case that the application has a getLogger then it will be initialized before the start
@@ -233,6 +247,6 @@ class Log(val tag: String)  {
                 className: String? = null) {
         if (severity.ordinal > this.severity.ordinal) return
         val stackTrace = if (severity.ordinal <= callStackSeverity.ordinal) Throwable().stackTrace.toInternal() else null
-        LogManager.push(Message(tag, severity, msg, stackTrace, throwable, function, fileName, lineNumber, className))
+        LogManager.push(Message(severity, msg, tag, stackTrace, throwable, function, fileName, lineNumber, className))
     }
 }

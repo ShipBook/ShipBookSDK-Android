@@ -28,7 +28,7 @@ class JSONTest {
 
     @Test
     fun message() {
-        val message = Message("test", Severity.Error, "message1")
+        val message = Message(Severity.Error, "message1")
         val baseLog = BaseLog.create(message.toJson()) as Message
         assertEquals(message, baseLog)
     }
@@ -178,7 +178,7 @@ class JSONTest {
 
     @Test
     fun sessionLogData() {
-        val message = Message("test", Severity.Error, "message1")
+        val message = Message(Severity.Error, "message1")
         //val login = Login("idTest", "appTest")
         val login = Login("idTest", "appTest")
         val sessionLogData = SessionLogData("test", login)

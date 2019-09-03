@@ -38,7 +38,7 @@ internal object LogManager {
             val appenderNames = HashSet<String>()
 
             loggers.forEach() {
-                if (log.tag.startsWith(it.key) && log.severity.ordinal <= it.severity.ordinal) appenderNames.add(it.appender.name)
+                if (log.tag!!.startsWith(it.key) && log.severity.ordinal <= it.severity.ordinal) appenderNames.add(it.appender.name)
             }
 
             appenderNames.forEach() { appenders[it]?.push(log) }

@@ -30,11 +30,11 @@ class AppenderTest {
         val token = "testing"
         SessionManager.token = token
         val logs1 = ArrayList<BaseLog>()
-        logs1.add(Message("test", Severity.Verbose, "message1"))
-        logs1.add(Message("test", Severity.Debug, "message2"))
-        logs1.add(Message("test", Severity.Info, "message3"))
-        logs1.add(Message("test", Severity.Warning, "message4"))
-        logs1.add(Message("test", Severity.Error, "message5"))
+        logs1.add(Message(Severity.Verbose, "message1"))
+        logs1.add(Message(Severity.Debug, "message2"))
+        logs1.add(Message(Severity.Info, "message3"))
+        logs1.add(Message(Severity.Warning, "message4"))
+        logs1.add(Message(Severity.Error, "message5"))
 
         logs1.forEach { log -> cloudAppender.saveToFile(log)}
 
@@ -42,11 +42,11 @@ class AppenderTest {
         SessionManager.token = null
         SessionManager.login = Login("59f196837211df173c430c51", "5a4b2e7f82416460bd2afc1cdb002e743ac25ce9")
         val logs2 = ArrayList<BaseLog>()
-        logs2.add(Message("test2", Severity.Info, "message1"))
-        logs2.add(Message("test2", Severity.Info, "message2"))
-        logs2.add(Message("test2", Severity.Info, "message3"))
-        logs2.add(Message("test2", Severity.Info, "message4"))
-        logs2.add(Message("test2", Severity.Info, "message5"))
+        logs2.add(Message(Severity.Info, "message1", "test2"))
+        logs2.add(Message(Severity.Info, "message2", "test2"))
+        logs2.add(Message(Severity.Info, "message3", "test2"))
+        logs2.add(Message(Severity.Info, "message4", "test2"))
+        logs2.add(Message(Severity.Info, "message5", "test2"))
 
         logs2.forEach { log -> cloudAppender.saveToFile(log)}
 
