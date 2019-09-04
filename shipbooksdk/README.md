@@ -98,10 +98,27 @@ To log the user’s screen information, add the following code
 ShipBook.screen(name: "SCREEN_NAME")
 ```
 
-
-
 ---
 
+## Integrating with [Timber](https://github.com/JakeWharton/timber)
+
+Just add the following code and it will work out of the box with timber.
+
+```java
+  ShipBook.addWrapperClass(Timber.class.getName());
+  Timber.plant(new Timber.Tree() {
+      {
+          ShipBook.addWrapperClass(this.getClass().getName());
+      }
+
+      @Override
+      protected void log(int priority, @Nullable String tag, @NotNull String message, @Nullable Throwable t) {
+          Log.message(tag, message, priority, t);
+      }
+  });
+```
+
+---
 
 ## Author
 
