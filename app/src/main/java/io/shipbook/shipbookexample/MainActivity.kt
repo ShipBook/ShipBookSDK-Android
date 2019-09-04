@@ -30,6 +30,7 @@ class MainActivity : FragmentActivity() {
         LogWrapper.d("wrapper", "wrapper debug message")
         Log.message("fullMessage", "debug message", Severity.Debug, null, "on", "main", 31, "MAIN")
         Log.w(null , "no tag")
+        Log.message("message severity number", "debug message", Severity.fromInt(3), null, "on", "main", 31, "MAIN")
         ShipBook.screen("main screen")
 
         button.setOnClickListener {

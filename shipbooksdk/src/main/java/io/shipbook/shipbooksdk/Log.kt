@@ -127,6 +127,30 @@ class Log(val tag: String)  {
         @JvmOverloads
         fun message(tag:String?,
                     msg: String,
+                    severity: Int,
+                    throwable: Throwable? = null,
+                    function: String? = null,
+                    fileName: String? = null,
+                    lineNumber: Int? = null,
+                    className: String? = null) {
+            message(tag, msg, Severity.fromInt(severity), throwable, function, fileName, lineNumber, className)
+        }
+
+        /**
+         * General message
+         * @param tag The tag.
+         * @param msg The message.
+         * @param severity The log severity of the message.
+         * @param throwable If there is a log throwable.
+         * @param function the function name
+         * @param fileName the fileName
+         * @param lineNumber the line number
+         * @param className the class name
+         */
+        @JvmStatic
+        @JvmOverloads
+        fun message(tag:String?,
+                    msg: String,
                     severity: Severity,
                     throwable: Throwable? = null,
                     function: String? = null,

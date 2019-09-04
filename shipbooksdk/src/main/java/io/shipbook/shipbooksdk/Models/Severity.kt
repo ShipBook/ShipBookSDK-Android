@@ -34,5 +34,10 @@ enum class Severity (val value: Int){
     /**
      * Verbose severity
      */
-    Verbose(2)
+    Verbose(2);
+
+    companion object {
+        private val map = values().associateBy(Severity::value)
+        fun fromInt(type: Int) = map[type] ?: Verbose
+    }
 }
