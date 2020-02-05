@@ -1,5 +1,6 @@
 package io.shipbook.shipbooksdk.Models
 
+import io.shipbook.shipbooksdk.ShipBook
 import io.shipbook.shipbooksdk.Util.toInternal
 import io.shipbook.shipbooksdk.Util.toJson
 import io.shipbook.shipbooksdk.Util.toListStackTraceElement
@@ -46,7 +47,10 @@ internal data class Message(val severity: Severity,
         }
 
         fun addIgnoreClass(name: String) { ignoreClasses += name }
-        val ignoreClasses = mutableListOf("io.shipbook.shipbooksdk")
+        val shipbookClassname = ShipBook::class.java.name
+        val lastIndex = shipbookClassname.indexOfLast { c -> c == '.' }
+        val ignoreShipbook = shipbookClassname.substring(0, lastIndex)
+        val ignoreClasses = mutableListOf(ignoreShipbook)
     }
 
     init {
