@@ -270,7 +270,7 @@ class Log(val tag: String)  {
                 lineNumber: Int? = null,
                 className: String? = null) {
         if (severity.ordinal > this.severity.ordinal) return
-        val stackTrace = if (severity.ordinal <= callStackSeverity.ordinal) Throwable().stackTrace.toInternal() else null
+        val stackTrace = if (severity.ordinal <= this.callStackSeverity.ordinal) Throwable().stackTrace.toInternal() else null
         LogManager.push(Message(severity, msg, tag, stackTrace, throwable, function, fileName, lineNumber, className))
     }
 }

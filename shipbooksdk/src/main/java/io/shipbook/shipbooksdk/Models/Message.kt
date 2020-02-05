@@ -78,6 +78,7 @@ internal data class Message(val severity: Severity,
         json.put("severity", severity)
         json.put("message", message)
         json.putOpt("exception", exception?.toJson())
+        json.putOpt("stackTrace", stackTrace?.toJson())
         json.put("function", function)
         json.put("fileName", fileName)
         json.put("lineNumber", lineNumber)
