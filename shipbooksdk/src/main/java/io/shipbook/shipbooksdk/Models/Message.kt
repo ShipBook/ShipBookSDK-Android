@@ -47,10 +47,8 @@ internal data class Message(val severity: Severity,
         }
 
         fun addIgnoreClass(name: String) { ignoreClasses += name }
-        val shipbookClassname = ShipBook::class.java.name
-        val lastIndex = shipbookClassname.indexOfLast { c -> c == '.' }
-        val ignoreShipbook = shipbookClassname.substring(0, lastIndex)
-        val ignoreClasses = mutableListOf(ignoreShipbook)
+        val shipbookClassname = ShipBook::class.java.name.substringBeforeLast(".")
+        val ignoreClasses = mutableListOf(shipbookClassname)
     }
 
     init {

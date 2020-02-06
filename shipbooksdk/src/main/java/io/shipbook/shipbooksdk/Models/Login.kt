@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.provider.Settings
 import io.shipbook.shipbooksdk.Networking.SessionManager
+import io.shipbook.shipbooksdk.ShipBook
 import io.shipbook.shipbooksdk.Util.DateHelper
 import io.shipbook.shipbooksdk.Util.toStandardString
 import org.json.JSONObject
@@ -38,6 +39,7 @@ internal data class Login(
         //    var advertisementId: String? = nil
         val language: String = Locale.getDefault().language,
         val isDebug: Boolean = (0 != (SessionManager.appContext!!.applicationInfo.flags.and(ApplicationInfo.FLAG_DEBUGGABLE))),
+        val isObfuscated: Boolean = !ShipBook::class.java.name.equals("io.shipbook.shipbooksdk.ShipBook"),
         var user: User? = null
 
         ): BaseObj {
@@ -71,8 +73,9 @@ internal data class Login(
             //    var advertisementId: String? = nil
             val language = json.getString("language")
             val isDebug = json.getBoolean("isDebug")
+            val isObfuscated = json.getBoolean("isObfuscated")
             val user = if (json.has("user")) User.create(json.optJSONObject("user")) else null
-            return Login(appId, appKey, os, appName, udid, time, deviceTime, osVersion, appVersion, appVersionCode, sdkVersion, sdkVersionCode, manufacturer, deviceModel, deviceName, language, isDebug, user)
+            return Login(appId, appKey, os, appName, udid, time, deviceTime, osVersion, appVersion, appVersionCode, sdkVersion, sdkVersionCode, manufacturer, deviceModel, deviceName, language, isDebug, isObfuscated, user)
         }
     }
 
@@ -95,6 +98,7 @@ internal data class Login(
         json.put("deviceName", deviceName)
         json.put("language", language)
         json.put("isDebug", isDebug)
+        json.put("isObfuscated", isObfuscated)
         json.putOpt("user", user?.toJson())
         return json
     }
