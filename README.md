@@ -128,6 +128,26 @@ Now you'll have in crashlytics a link to the logs of the specific session. The l
 
 ---
 
+## Integrating with [Timber](https://github.com/JakeWharton/timber)
+
+Just add the following code and it will work out of the box with timber.
+
+```java
+  ShipBook.addWrapperClass(Timber.class.getName());
+  Timber.plant(new Timber.Tree() {
+      {
+          ShipBook.addWrapperClass(this.getClass().getName());
+      }
+
+      @Override
+      protected void log(int priority, @Nullable String tag, @NotNull String message, @Nullable Throwable t) {
+          Log.message(tag, message, priority, t);
+      }
+  });
+```
+
+---
+
 ## Author
 
 Elisha Sterngold ([ShipBook Ltd.](https://www.shipbook.io))
