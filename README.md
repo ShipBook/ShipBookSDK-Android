@@ -146,6 +146,12 @@ Just add the following code and it will work out of the box with timber.
   });
 ```
 
+## Obfuscation with Shipbook
+In the case that the build is obfuscated to let all the functionality in Shipbook to work add the following lines to your Proguard 
+```proguard
+   -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
+```
+
 ---
 
 ## Author
