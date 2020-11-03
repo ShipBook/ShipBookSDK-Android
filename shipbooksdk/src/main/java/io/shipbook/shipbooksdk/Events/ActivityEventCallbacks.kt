@@ -4,8 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.FragmentActivity
-import android.support.v7.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
+import androidx.appcompat.app.AppCompatActivity
 import io.shipbook.shipbooksdk.InnerLog
 import io.shipbook.shipbooksdk.LogManager
 import io.shipbook.shipbooksdk.Models.ActivityEvent

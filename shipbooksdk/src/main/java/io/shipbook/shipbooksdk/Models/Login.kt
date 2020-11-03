@@ -48,7 +48,12 @@ internal data class Login(
             val context = SessionManager.appContext!!
             val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             appVersion = pInfo.versionName ?: "" // in test it is null
-            appVersionCode = pInfo.versionCode
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) appVersionCode = pInfo.longVersionCode.toInt()
+            else {
+                @Suppress("DEPRECATION")
+                appVersionCode = pInfo.versionCode
+            }
+
         }
     }
 

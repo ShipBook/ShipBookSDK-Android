@@ -1,7 +1,7 @@
 package io.shipbook.shipbooksdk
 
 import android.content.Intent
-import android.support.v4.content.LocalBroadcastManager
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import io.shipbook.shipbooksdk.Appenders.AppenderFactory
 import io.shipbook.shipbooksdk.Appenders.BaseAppender
 import io.shipbook.shipbooksdk.Models.BaseLog

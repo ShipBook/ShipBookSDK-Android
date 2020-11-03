@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.support.v4.content.LocalBroadcastManager
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import io.shipbook.shipbooksdk.Models.Message
 import io.shipbook.shipbooksdk.Models.Severity
 import io.shipbook.shipbooksdk.Networking.SessionManager

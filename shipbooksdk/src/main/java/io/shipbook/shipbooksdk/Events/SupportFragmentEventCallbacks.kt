@@ -2,8 +2,8 @@ package io.shipbook.shipbooksdk.Events
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import android.view.View
 import io.shipbook.shipbooksdk.InnerLog
 import io.shipbook.shipbooksdk.LogManager
@@ -25,10 +25,9 @@ internal object SupportFragmentEventCallbacks : FragmentManager.FragmentLifecycl
         LogManager.push(fragmentEvent)
     }
 
-    override fun onFragmentPreAttached(fm: FragmentManager, f: Fragment, context: Context?) {
+    override fun onFragmentPreAttached(fm: FragmentManager, f: Fragment, context: Context) {
         createEvent("onFragmentPreAttached", f)
     }
-
 
     override fun onFragmentAttached(fm: FragmentManager, f: Fragment, context: Context) {
         createEvent("onFragmentAttached", f)
@@ -66,10 +65,6 @@ internal object SupportFragmentEventCallbacks : FragmentManager.FragmentLifecycl
 
     override fun onFragmentStopped(fm: FragmentManager, f: Fragment) {
         createEvent("onFragmentStopped", f)
-    }
-
-    override fun onFragmentSaveInstanceState(fm: FragmentManager, f: Fragment, outState: Bundle?) {
-        InnerLog.v(TAG, "onFragmentSaveInstanceState called")
     }
 
     override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {

@@ -1,8 +1,9 @@
 package io.shipbook.shipbooksdk
 
 import android.app.Application
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.shipbook.shipbooksdk.Appenders.SBCloudAppender
 import io.shipbook.shipbooksdk.Models.*
 import io.shipbook.shipbooksdk.Networking.SessionManager
@@ -22,7 +23,7 @@ import java.util.*
 class AppenderTest {
     @Test
     fun cloudAppender() {
-        val application = InstrumentationRegistry.getTargetContext().applicationContext as Application //InstrumentationRegistry.getInstrumentation().newApplication(TestApplication::class.java.classLoader,"TestApplication", InstrumentationRegistry.getContext())
+        val application = ApplicationProvider.getApplicationContext<Context>() as Application
         SessionManager.application = application
 
         val cloudAppender = SBCloudAppender("cloud", null)
