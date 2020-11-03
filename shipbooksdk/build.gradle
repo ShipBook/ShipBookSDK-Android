@@ -14,7 +14,7 @@ ext {
     githubRepository = 'https://github.com/ShipBook/ShipBookSDK-Android'
     gitUrl = 'git@bitbucket.org:shipbook/android.git'
 
-    libraryVersion = '1.4.0'
+    libraryVersion = '1.5.0'
 
     developerId = 'elisha'
     developerName = 'Elisha Sterngold'
