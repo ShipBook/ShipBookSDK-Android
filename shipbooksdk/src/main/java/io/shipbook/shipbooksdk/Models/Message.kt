@@ -39,10 +39,10 @@ internal data class Message(val severity: Severity,
             val message = json.getString("message")
             val stackTrace = json.optJSONArray("stackTrace")?.toListStackTraceElement()
             val exception = if (json.has("exception")) MessageException.create(json.optJSONObject("exception")) else null
-            val function = json.getString("function")
-            val fileName = json.getString("fileName")
-            val lineNumber = json.getInt("lineNumber")
-            val className = json.getString("className")
+            val function = json.optString("function");
+            val fileName = json.optString("fileName")
+            val lineNumber = json.optInt("lineNumber")
+            val className = json.optString("className")
             return Message(severity, message, tag, stackTrace, null, function, fileName, lineNumber, className, exception, orderId, time, threadInfo)
         }
 
