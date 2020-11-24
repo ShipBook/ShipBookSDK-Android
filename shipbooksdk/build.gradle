@@ -14,7 +14,7 @@ ext {
     githubRepository = 'https://github.com/ShipBook/ShipBookSDK-Android'
     gitUrl = 'git@bitbucket.org:shipbook/android.git'
 
-    libraryVersion = '1.5.0'
+    libraryVersion = '1.6.0'
 
     developerId = 'elisha'
     developerName = 'Elisha Sterngold'
@@ -36,7 +36,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 8
-        versionName "1.5.0"
+        versionName "1.6.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
