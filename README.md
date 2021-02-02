@@ -117,9 +117,9 @@ To integrate Shipbook with crashlytics just implement the completion callback of
 
 ```java
 ShipBook.start(this,"YOUR_APP_ID", "YOUR_APP_KEY", (sessionUrl)-> {
-            Crashlytics.setString("shipbookSession", sessionUrl);
-            return Unit.INSTANCE;
-        });
+    FirebaseCrashlytics.getInstance().setCustomKey("shipbookSession", sessionUrl);
+    return Unit.INSTANCE;
+});
 ```
 
 (in Kotlin you don't need `return Unit.INSTANCE`)
