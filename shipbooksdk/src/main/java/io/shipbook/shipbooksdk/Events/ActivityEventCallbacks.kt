@@ -64,6 +64,7 @@ internal object  ActivityEventCallbacks : Application.ActivityLifecycleCallbacks
             is AppCompatActivity -> activity.supportFragmentManager.registerFragmentLifecycleCallbacks(SupportFragmentEventCallbacks, true)
             is FragmentActivity -> activity.supportFragmentManager.registerFragmentLifecycleCallbacks(SupportFragmentEventCallbacks, true)
             else -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                @Suppress("DEPRECATION")
                 activity.fragmentManager.registerFragmentLifecycleCallbacks(FragmentEventCallbacks, true)
             } else {
                 InnerLog.w(TAG, "doesn't have a version that supports registerFragmentLifecycleCallbacks")

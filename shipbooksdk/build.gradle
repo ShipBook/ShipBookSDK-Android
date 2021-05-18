@@ -1,40 +1,15 @@
 apply plugin: 'com.android.library'
-
-ext {
-    bintrayRepo = 'shipbooksdk'
-    bintrayName = 'android'
-    bintrayOrg = 'shipbook'
-    publishedGroupId = 'io.shipbook.shipbooksdk'
-    libraryName = 'shipbooksdk'
-    artifact = 'shipbooksdk'
-
-    libraryDescription = 'ShipBook - A better way to analyze your mobile logs'
-
-    siteUrl = 'https://shipbook.io'
-    githubRepository = 'https://github.com/ShipBook/ShipBookSDK-Android'
-    gitUrl = 'git@bitbucket.org:shipbook/android.git'
-
-    libraryVersion = '1.6.0'
-
-    developerId = 'elisha'
-    developerName = 'Elisha Sterngold'
-    developerEmail = 'info@shipbook.io'
-
-    organization = "shipbook"
-
-    licenseName = 'MIT'
-    licenseUrl = 'https://github.com/ShipBook/ShipBookSDK-Android/blob/master/LICENSE'
-    allLicenses = ["MIT"]
-}
-
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.vanniktech.maven.publish'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 8
         versionName "1.6.0"
 
@@ -64,87 +39,10 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 }
 
-repositories {
-    mavenCentral()
-    maven { url "https://kotlin.bintray.com/kotlinx" }
-}
-
-tasks.withType(Javadoc).all {
-    enabled = false
-}
-
-// Place it at the end of the file
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-// apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle' // there is missing userOrg therefor can't be used therefore I added manually
-apply plugin: 'com.jfrog.bintray'
-
-version = libraryVersion
-
-if (project.hasProperty("android")) { // Android libraries
-    task sourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.srcDirs
-    }
-
-    task javadoc(type: Javadoc) {
-        source = android.sourceSets.main.java.srcDirs
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    }
-} else { // Java libraries
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
-}
-
-// Bintray
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
-
-    configurations = ['archives']
-    pkg {
-        repo = bintrayRepo
-        name = bintrayName
-        userOrg = bintrayOrg
-        desc = libraryDescription
-        websiteUrl = siteUrl
-        issueTrackerUrl = siteUrl+'/issues'
-        vcsUrl = gitUrl
-        licenses = allLicenses
-        githubRepo = githubRepository //Optional Github repository
-        githubReleaseNotesFile = 'README.md' //Optional Github readme file
-        publish = true
-        publicDownloadNumbers = true
-        version {
-            desc = libraryDescription
-            gpg {
-                sign = true //Determines whether to GPG sign the files. The default is false
-                passphrase = properties.getProperty("bintray.gpg.password")
-                //Optional. The passphrase for GPG signing'
-            }
+allprojects {
+    plugins.withId("com.vanniktech.maven.publish") {
+        mavenPublish {
+            sonatypeHost = "S01"
         }
     }
-}
-
-apply plugin: 'org.jetbrains.dokka-android'
-
-dokka {
-    outputFormat = 'html'
-    includes = ['README.md']
-    reportUndocumented = true
-    moduleName = 'shipbooksdk'
 }
