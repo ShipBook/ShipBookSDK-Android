@@ -17,5 +17,6 @@ class ShipBookApplication : Application() {
         ShipBook.enableInnerLog(true)
         ShipBook.start(this,"YOUR_APPID", "YOUR_APPKEY")
         ShipBook.addWrapperClass(LogWrapper::class.java.name)
+        ShipBook.registerUser("1")
     }
 }

@@ -145,8 +145,10 @@ internal object SessionManager {
     }
 
     fun logout() {
-        this.token = null
-        this.user = null
+        token = null
+        user = null
+        if (login != null) login = Login(login!!.appId, login!!.appKey)
+        innerLogin()
     }
 
     suspend fun refreshToken(): Boolean {
