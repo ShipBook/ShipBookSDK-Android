@@ -13,9 +13,9 @@ internal data class LoginResponse(val token: String, val config: ConfigResponse,
 
     companion object {
         fun create(json: JSONObject): LoginResponse {
-            val token = json.getString("token")
+            val token = json.optString("token")
             val config = ConfigResponse.create(json.getJSONObject("config"))
-            val sessionUrl = json.getString("sessionUrl")
+            val sessionUrl = json.optString("sessionUrl")
             return LoginResponse(token, config, sessionUrl)
         }
     }

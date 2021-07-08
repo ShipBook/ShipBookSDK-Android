@@ -13,8 +13,8 @@ import org.json.JSONObject
 internal data class ErrorResponse (val name: String, val message: String, val status: Int?) {
     companion object {
         fun create(json: JSONObject): ErrorResponse {
-            val name = json.getString("name")
-            val message = json.getString("message")
+            val name = json.optString("name")
+            val message = json.optString("message")
             val status = json.optInt("status")
             return ErrorResponse(name, message, status)
         }

@@ -22,9 +22,9 @@ internal data class ActivityEvent(val name: String,
                    orderId: Int,
                    time: Date,
                    threadInfo: ThreadInfo): ActivityEvent {
-            val name = json.getString("name")
-            val event = json.getString("event")
-            val title = json.getString("title")
+            val name = json.optString("name")
+            val event = json.optString("event")
+            val title = json.optString("title")
             return ActivityEvent(name, event, title, orderId, time, threadInfo)
         }
     }

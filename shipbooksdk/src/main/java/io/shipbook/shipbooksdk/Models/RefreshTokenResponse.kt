@@ -12,7 +12,7 @@ import org.json.JSONObject
 internal data class RefreshTokenResponse(val token: String): BaseObj {
     companion object {
         fun create(json: JSONObject): RefreshTokenResponse {
-            val token = json.getString("token")
+            val token = json.optString("token")
             return RefreshTokenResponse(token)
         }
     }

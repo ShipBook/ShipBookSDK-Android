@@ -15,8 +15,8 @@ internal data class StackTraceElement (val declaringClass: String,
                                        val lineNumber: Int): BaseObj {
     companion object {
         fun create(json: JSONObject): StackTraceElement {
-            val declaringClass = json.getString("declaringClass")
-            val methodName = json.getString("methodName")
+            val declaringClass = json.optString("declaringClass")
+            val methodName = json.optString("methodName")
             val fileName = json.optString("fileName")
             val lineNumber = json.getInt("lineNumber")
             return StackTraceElement(declaringClass, methodName, fileName, lineNumber)

@@ -34,9 +34,9 @@ internal data class Message(val severity: Severity,
                    orderId: Int,
                    time: Date,
                    threadInfo: ThreadInfo): Message {
-            val tag = json.getString("tag")
-            val severity = Severity.valueOf(json.getString("severity"))
-            val message = json.getString("message")
+            val tag = json.optString("tag")
+            val severity = Severity.valueOf(json.optString("severity"))
+            val message = json.optString("message")
             val stackTrace = json.optJSONArray("stackTrace")?.toListStackTraceElement()
             val exception = if (json.has("exception")) MessageException.create(json.optJSONObject("exception")) else null
             val function = json.optString("function");
