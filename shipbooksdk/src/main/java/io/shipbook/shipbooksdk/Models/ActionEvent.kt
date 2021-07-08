@@ -23,10 +23,10 @@ internal data class ActionEvent(val action: String,
                    orderId: Int,
                    time: Date,
                    threadInfo: ThreadInfo): ActionEvent {
-            val action = json.getString("action")
-            val sender = json.getString("sender")
-            val senderTitle = json.getString("senderTitle")
-            val target = json.getString("target")
+            val action = json.optString("action")
+            val sender = json.optString("sender")
+            val senderTitle = json.optString("senderTitle")
+            val target = json.optString("target")
             return ActionEvent(action, sender, senderTitle, target, orderId, time, threadInfo)
         }
     }

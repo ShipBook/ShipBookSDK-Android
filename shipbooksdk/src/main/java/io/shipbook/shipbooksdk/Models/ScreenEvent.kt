@@ -20,7 +20,7 @@ internal data class ScreenEvent(val name: String,
                    orderId: Int,
                    time: Date,
                    threadInfo: ThreadInfo): ScreenEvent {
-            val name = json.getString("name")
+            val name = json.optString("name")
             return ScreenEvent(name, orderId, time, threadInfo)
         }
     }

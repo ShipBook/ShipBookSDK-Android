@@ -58,8 +58,8 @@ internal data class ConfigResponse(val appenders: List<AppenderResponse>,
     data class AppenderResponse(val type: String, val name: String, val config: Config? = null): BaseObj {
         companion object {
             fun create(json: JSONObject): AppenderResponse {
-                val type: String = json.getString("type")
-                val name: String = json.getString("name")
+                val type: String = json.optString("type")
+                val name: String = json.optString("name")
 
 
                 var config: MutableMap<String, String>? = null
@@ -67,7 +67,7 @@ internal data class ConfigResponse(val appenders: List<AppenderResponse>,
                     config = mutableMapOf()
                     val configObject = json.getJSONObject("config")
                     configObject.keys().forEach {
-                        config.set(it, configObject.getString(it))
+                        config.set(it, configObject.optString(it))
                     }
                 }
 
@@ -92,10 +92,10 @@ internal data class ConfigResponse(val appenders: List<AppenderResponse>,
     data class LoggerResponse(val name: String, val severity: Severity, val callStackSeverity: Severity = Severity.Off, val appenderRef: String): BaseObj {
         companion object {
             fun create(json: JSONObject): LoggerResponse {
-                val name = json.getString("name")
-                val severity = Severity.valueOf(json.getString("severity"))
-                val callStackSeverity = if (json.has("callStackSeverity")) Severity.valueOf(json.getString("callStackSeverity")) else Severity.Off
-                val appenderRef = json.getString("appenderRef")
+                val name = json.optString("name")
+                val severity = Severity.valueOf(json.optString("severity", Severity.Verbose.name))
+                val callStackSeverity = if (json.has("callStackSeverity")) Severity.valueOf(json.optString("callStackSeverity", Severity.Verbose.name)) else Severity.Off
+                val appenderRef = json.optString("appenderRef")
                 return LoggerResponse(name, severity, callStackSeverity, appenderRef)
             }
         }

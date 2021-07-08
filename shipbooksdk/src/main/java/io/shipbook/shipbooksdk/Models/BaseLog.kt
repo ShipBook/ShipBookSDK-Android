@@ -23,9 +23,9 @@ internal abstract class BaseLog(val type: String,
         var count = AtomicInteger(0)
 
         fun create(json: JSONObject): BaseLog {
-            val type = json.getString("type")
+            val type = json.optString("type")
             val orderId = json.getInt("orderId")
-            val time = DateHelper.createDateStandard(json.getString("time"))!!
+            val time = DateHelper.createDateStandard(json.optString("time"))!!
             val threadInfo = ThreadInfo.create(json.getJSONObject("threadInfo"))
             return when (type) {
                 "message" -> Message.create(json, orderId, time, threadInfo)
@@ -66,7 +66,7 @@ internal abstract class BaseLog(val type: String,
 
         companion object {
             fun create(json: JSONObject): ThreadInfo {
-                val threadName = json.getString("threadName")
+                val threadName = json.optString("threadName")
                 val threadId = json.getLong("threadId")
                 val isMain = json.getBoolean("isMain")
                 return  ThreadInfo(threadName, threadId, isMain)

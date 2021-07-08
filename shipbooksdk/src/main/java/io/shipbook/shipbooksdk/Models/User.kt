@@ -18,7 +18,7 @@ internal data class User(val userId:String,
 
     companion object {
         fun create(json: JSONObject) : User {
-            val userId = json.getString("userId")
+            val userId = json.optString("userId")
             val userName = json.optString("userName", null)
             val fullName = json.optString("fullName", null)
             val email = json.optString("email", null)
@@ -28,7 +28,7 @@ internal data class User(val userId:String,
             if (additionalInfoObject != null) {
                 additionalInfo = mutableMapOf()
                 additionalInfoObject.keys().forEach {
-                    additionalInfo.set(it, additionalInfoObject.getString(it))
+                    additionalInfo.set(it, additionalInfoObject.optString(it))
                 }
             }
             return User(userId, userName, fullName, email, phoneNumber, additionalInfo)

@@ -23,7 +23,7 @@ internal data class ConfigEvent(val orientation: Orientation,
                    orderId: Int,
                    time: Date,
                    threadInfo: ThreadInfo): ConfigEvent {
-            val orientation = Orientation.valueOf(json.getString("orientation"))
+            val orientation = Orientation.valueOf(json.optString("orientation"))
             return ConfigEvent(orientation, orderId, time, threadInfo)
         }
     }
