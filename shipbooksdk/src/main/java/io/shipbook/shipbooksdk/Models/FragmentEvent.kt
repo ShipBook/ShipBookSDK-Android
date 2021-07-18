@@ -22,8 +22,8 @@ internal data class FragmentEvent(val name: String,
                    orderId: Int,
                    time: Date,
                    threadInfo: ThreadInfo): FragmentEvent {
-            val name = json.getString("name")
-            val event = json.getString("event")
+            val name = json.optString("name")
+            val event = json.optString("event")
             return FragmentEvent(name, event, orderId, time, threadInfo)
         }
     }

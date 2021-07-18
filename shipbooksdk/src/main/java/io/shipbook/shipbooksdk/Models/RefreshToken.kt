@@ -12,8 +12,8 @@ import org.json.JSONObject
 internal data class RefreshToken(val token: String, val appKey: String): BaseObj {
     companion object {
         fun create(json: JSONObject): RefreshToken {
-            val token = json.getString("token")
-            val appKey = json.getString("appKey")
+            val token = json.optString("token")
+            val appKey = json.optString("appKey")
             return RefreshToken(token, appKey)
         }
     }

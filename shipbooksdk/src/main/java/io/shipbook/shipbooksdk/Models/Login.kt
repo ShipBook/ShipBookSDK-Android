@@ -59,24 +59,24 @@ internal data class Login(
 
     companion object {
         fun create(json: JSONObject): Login {
-            val appId = json.getString("appId")
-            val appKey = json.getString("appKey")
-            val os = json.getString("os")
+            val appId = json.optString("appId")
+            val appKey = json.optString("appKey")
+            val os = json.optString("os")
             //    val bundleIdentifier: String
-            val appName = json.getString("appName")
-            val udid = json.getString("udid")
-            val time = DateHelper.createDateStandard(json.getString("time"))!!
-            val deviceTime = DateHelper.createDateStandard(json.getString("deviceTime"))!!
-            val osVersion = json.getString("osVersion")
-            val appVersion = json.getString("appVersion")
+            val appName = json.optString("appName")
+            val udid = json.optString("udid")
+            val time = DateHelper.createDateStandard(json.optString("time"))!!
+            val deviceTime = DateHelper.createDateStandard(json.optString("deviceTime"))!!
+            val osVersion = json.optString("osVersion")
+            val appVersion = json.optString("appVersion")
             val appVersionCode = json.getInt("appVersionCode")
-            val sdkVersion = json.getString("sdkVersion")
+            val sdkVersion = json.optString("sdkVersion")
             val sdkVersionCode = json.getInt("sdkVersionCode")
-            val manufacturer = json.getString("manufacturer")
-            val deviceModel = json.getString("deviceModel")
-            val deviceName = json.getString("deviceName")
+            val manufacturer = json.optString("manufacturer")
+            val deviceModel = json.optString("deviceModel")
+            val deviceName = json.optString("deviceName")
             //    var advertisementId: String? = nil
-            val language = json.getString("language")
+            val language = json.optString("language")
             val isDebug = json.getBoolean("isDebug")
             val isObfuscated = json.getBoolean("isObfuscated")
             val user = if (json.has("user")) User.create(json.optJSONObject("user")) else null
