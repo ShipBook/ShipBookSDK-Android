@@ -12,7 +12,7 @@
       "name" : "cloud",
       "config" :
       {
-        "maxTime" : 5,
+        "maxTime" : "5",
         "flushSeverity" : "Warning"
       }
     }],
