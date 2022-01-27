@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ShipBook.iml" filepath="$PROJECT_DIR$/ShipBook.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ShipBook.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ShipBook.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shipbooksdk/ShipBook.shipbooksdk.iml" filepath="$PROJECT_DIR$/.idea/modules/shipbooksdk/ShipBook.shipbooksdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ShipBookSDK-Android.iml" filepath="$PROJECT_DIR$/.idea/modules/ShipBookSDK-Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ShipBookSDK-Android.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ShipBookSDK-Android.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shipbooksdk/ShipBookSDK-Android.shipbooksdk.iml" filepath="$PROJECT_DIR$/.idea/modules/shipbooksdk/ShipBookSDK-Android.shipbooksdk.iml" />
     </modules>
   </component>
 </project>
