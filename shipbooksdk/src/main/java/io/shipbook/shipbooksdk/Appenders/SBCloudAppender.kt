@@ -103,10 +103,10 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
 
     override fun update(config: Config?) {
         config?.apply {
-            this["maxTime"]?.toDouble()?.let { maxTime = it }
-            this["maxFileSize"]?.toInt()?.let { maxFileSize = it }
-            this["flushSeverity"]?.let { flushSeverity = Severity.valueOf(it) }
-            this["flushSize"]?.toInt()?.let { flushSize = it }
+            this["maxTime"]?.let { if (it is Number ) maxTime = it.toDouble()}
+            this["maxFileSize"]?.let { if (it is Number) maxFileSize = it.toInt() }
+            this["flushSeverity"]?.let { if (it is String) flushSeverity = Severity.valueOf(it) }
+            this["flushSize"]?.let { if (it is Number) flushSize = it.toInt() }
         }
     }
 

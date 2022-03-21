@@ -62,12 +62,12 @@ internal data class ConfigResponse(val appenders: List<AppenderResponse>,
                 val name: String = json.optString("name")
 
 
-                var config: MutableMap<String, String>? = null
+                var config: MutableMap<String, Any>? = null
                 if (json.has("config")) {
                     config = mutableMapOf()
                     val configObject = json.getJSONObject("config")
                     configObject.keys().forEach {
-                        config.set(it, configObject.optString(it))
+                        config.set(it, configObject.get(it))
                     }
                 }
 
