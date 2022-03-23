@@ -3,10 +3,10 @@ package io.shipbook.shipbookexample
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
+import io.shipbook.shipbookexample.databinding.ActivityMainBinding
 import io.shipbook.shipbooksdk.Log
 import io.shipbook.shipbooksdk.Models.Severity
 import io.shipbook.shipbooksdk.ShipBook
-import kotlinx.android.synthetic.main.activity_main.*
 
 /*
  *
@@ -17,10 +17,13 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : FragmentActivity() {
     val log = ShipBook.getLogger("MainActivity")
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
         log.e("error message")
         log.w("warning message")
         log.i("info message")
@@ -33,13 +36,13 @@ class MainActivity : FragmentActivity() {
         Log.message("message severity number", "debug message", Severity.fromInt(3), null, "on", "main", 31, "MAIN")
         ShipBook.screen("main screen")
 
-        button.setOnClickListener {
+        binding.button.setOnClickListener {
             log.v("pressed button")
             val activity = Intent(this, SecondActivity::class.java)
             startActivity(activity)
         }
 
-        buttonCrash.setOnClickListener {
+        binding.buttonCrash.setOnClickListener {
             val temp = 0
             val test = 2
             @Suppress("DIVISION_BY_ZERO")
