@@ -13,6 +13,28 @@
         android:layout_height="wrap_content"
         android:text="Test Button"
         tools:ignore="HardcodedText" />
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="name"
+        android:autofillHints="name"
+        tools:ignore="HardcodedText"
+        android:inputType="textPersonName" />
+    <EditText
+        android:id="@+id/ignore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="ignore"
+        tools:ignore="HardcodedText" />
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="password"
+        android:inputType="textPassword"
+        tools:ignore="HardcodedText"
+        android:autofillHints="password" />
 
     <TextView
         android:layout_width="match_parent"

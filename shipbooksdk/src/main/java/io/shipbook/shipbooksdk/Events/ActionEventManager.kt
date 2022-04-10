@@ -1,6 +1,7 @@
 package io.shipbook.shipbooksdk.Events
 
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ import io.shipbook.shipbooksdk.Util.views
 
 internal object ActionEventManager {
     private val TAG = ActionEventManager::class.java.simpleName
+    var ignoreViews = emptySet<Int>()
     private fun createActionEvent(action: String, title: String, view: View) {
         val sender = view.javaClass.simpleName
         val actionEvent = ActionEvent(action, sender, title, "")
@@ -31,6 +33,7 @@ internal object ActionEventManager {
     }
 
     private fun registerView(view: View) {
+        if (ignoreViews.contains(view.id)) return
         when (view) {
             is ViewGroup -> registerViews(view)
             is CompoundButton -> {
@@ -56,7 +59,10 @@ internal object ActionEventManager {
                     }
 
                     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                        createActionEvent("textChanged", s.toString(), view) //TODO: need to check that it isn't passing the password info
+                        if (view.inputType and InputType.TYPE_TEXT_VARIATION_PASSWORD == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
+                            InnerLog.d("actionEvent", "is password")
+                        }
+                        else createActionEvent("textChanged", s.toString(), view) //TODO: need to check that it isn't passing the password info
                     }
                 })
 
@@ -109,5 +115,4 @@ internal object ActionEventManager {
 
         parent.views.forEach {view -> registerView(view) }
     }
-
 }

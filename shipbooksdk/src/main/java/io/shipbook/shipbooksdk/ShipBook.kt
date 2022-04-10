@@ -1,6 +1,7 @@
 package io.shipbook.shipbooksdk
 
 import android.app.Application
+import io.shipbook.shipbooksdk.Events.ActionEventManager
 import io.shipbook.shipbooksdk.Models.Message
 import io.shipbook.shipbooksdk.Models.ScreenEvent
 import io.shipbook.shipbooksdk.Networking.ConnectionClient
@@ -94,6 +95,18 @@ class ShipBook {
         @JvmStatic
         fun logout() {
             SessionManager.logout()
+        }
+
+        /**
+         * Ignore Views
+         *
+         * These views will be ignored for action events. This does that if there is private information in a view it won't log the information.
+         *
+         * @param ids The ids of the screens to ignore.
+         */
+        @JvmStatic
+        fun ignoreViews(vararg ids: Int) {
+            ActionEventManager.ignoreViews = ids.toSet()
         }
 
         /**
