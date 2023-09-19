@@ -39,10 +39,12 @@ internal object  ActivityEventCallbacks : Application.ActivityLifecycleCallbacks
 
     override fun onActivityStarted(activity: Activity) {
         createEvent("onActivityStarted", activity)
-        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return; //this should never happen but we got crashes
-        val content: ViewGroup = activity.findViewById(android.R.id.content)
-        ActionEventManager.registerViews(content)
-
+        val content: ViewGroup? = activity.findViewById(android.R.id.content)
+        content?.let {
+            ActionEventManager.registerViews(it)
+        } ?: run {
+            InnerLog.w(TAG, "content view is null")
+        }
     }
 
     override fun onActivityDestroyed(activity: Activity) {
