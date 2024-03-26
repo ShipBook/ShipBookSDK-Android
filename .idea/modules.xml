@@ -4,7 +4,13 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ShipBookSDK-Android.iml" filepath="$PROJECT_DIR$/.idea/modules/ShipBookSDK-Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ShipBookSDK-Android.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ShipBookSDK-Android.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ShipBookSDK-Android.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ShipBookSDK-Android.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ShipBookSDK-Android.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ShipBookSDK-Android.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ShipBookSDK-Android.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ShipBookSDK-Android.app.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/shipbooksdk/ShipBookSDK-Android.shipbooksdk.iml" filepath="$PROJECT_DIR$/.idea/modules/shipbooksdk/ShipBookSDK-Android.shipbooksdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shipbooksdk/ShipBookSDK-Android.shipbooksdk.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/shipbooksdk/ShipBookSDK-Android.shipbooksdk.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shipbooksdk/ShipBookSDK-Android.shipbooksdk.main.iml" filepath="$PROJECT_DIR$/.idea/modules/shipbooksdk/ShipBookSDK-Android.shipbooksdk.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shipbooksdk/ShipBookSDK-Android.shipbooksdk.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/shipbooksdk/ShipBookSDK-Android.shipbooksdk.unitTest.iml" />
     </modules>
   </component>
 </project>

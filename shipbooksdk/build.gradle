@@ -5,11 +5,9 @@ apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 29
-
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -25,6 +23,7 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    namespace 'io.shipbook.shipbooksdk'
 }
 
 dependencies {

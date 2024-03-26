@@ -4,11 +4,10 @@ apply plugin: 'kotlin-android'
 
 
 android {
-    compileSdkVersion 29
     defaultConfig {
         applicationId "io.shipbook.shipbookexample"
         minSdkVersion 26
-        targetSdkVersion 29
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -22,6 +21,7 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    namespace 'io.shipbook.shipbookexample'
 }
 
 dependencies {

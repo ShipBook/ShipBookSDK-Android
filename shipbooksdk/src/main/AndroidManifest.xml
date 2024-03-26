@@ -1,2 +1,1 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.shipbook.shipbooksdk" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" />
