@@ -14,7 +14,8 @@
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup">
         <activity android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            tools:node="merge">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,6 +23,8 @@
             </intent-filter>
         </activity>
         <activity
+            android:exported="false"
+            tools:node="merge"
             android:name=".SecondActivity"
             android:label="@string/title_activity_second"
             android:theme="@style/AppTheme.NoActionBar"/>
