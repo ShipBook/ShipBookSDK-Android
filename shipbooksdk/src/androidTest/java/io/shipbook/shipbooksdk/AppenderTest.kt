@@ -36,6 +36,7 @@ class AppenderTest {
         logs1.add(Message(Severity.Info, "message3"))
         logs1.add(Message(Severity.Warning, "message4"))
         logs1.add(Message(Severity.Error, "message5"))
+        logs1.add(ConfigEvent(Orientation.Landscape))
 
         logs1.forEach { log -> cloudAppender.saveToFile(log)}
 

@@ -51,7 +51,7 @@ internal object  ActivityEventCallbacks : Application.ActivityLifecycleCallbacks
         createEvent("onActivityDestroyed", activity)
     }
 
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle?) {
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
         InnerLog.v(TAG, "onActivitySaveInstanceState called")
     }
 

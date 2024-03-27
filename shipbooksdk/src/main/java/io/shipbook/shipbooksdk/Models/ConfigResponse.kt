@@ -93,8 +93,8 @@ internal data class ConfigResponse(val appenders: List<AppenderResponse>,
         companion object {
             fun create(json: JSONObject): LoggerResponse {
                 val name = json.optString("name")
-                val severity = Severity.valueOf(json.optString("severity", Severity.Verbose.name))
-                val callStackSeverity = if (json.has("callStackSeverity")) Severity.valueOf(json.optString("callStackSeverity", Severity.Verbose.name)) else Severity.Off
+                val severity = Severity.fromIdentifier(json.optString("severity", Severity.Verbose.name))
+                val callStackSeverity = if (json.has("callStackSeverity")) Severity.fromIdentifier(json.optString("callStackSeverity", Severity.Verbose.name)) else Severity.Off
                 val appenderRef = json.optString("appenderRef")
                 return LoggerResponse(name, severity, callStackSeverity, appenderRef)
             }

@@ -35,11 +35,11 @@ internal data class Message(val severity: Severity,
                    time: Date,
                    threadInfo: ThreadInfo): Message {
             val tag = json.optString("tag")
-            val severity = Severity.valueOf(json.optString("severity"))
+            val severity = Severity.fromIdentifier(json.optString("severity"))
             val message = json.optString("message")
             val stackTrace = json.optJSONArray("stackTrace")?.toListStackTraceElement()
-            val exception = if (json.has("exception")) MessageException.create(json.optJSONObject("exception")) else null
-            val function = json.optString("function");
+            val exception = if (json.has("exception")) MessageException.create(json.getJSONObject("exception")) else null
+            val function = json.optString("function")
             val fileName = json.optString("fileName")
             val lineNumber = json.optInt("lineNumber")
             val className = json.optString("className")
@@ -93,7 +93,7 @@ internal data class Message(val severity: Severity,
                                 val reason: String?,
                                 val stackTrace: List<StackTraceElement>) : BaseObj {
         companion object {
-            fun create(json: JSONObject): MessageException? {
+            fun create(json: JSONObject): MessageException {
                 val name = json.optString("name")
                 val reason = json.optString("reason")
                 val stackTrace = json.getJSONArray("stackTrace").toListStackTraceElement()

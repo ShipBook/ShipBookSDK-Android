@@ -34,8 +34,7 @@ internal object EventManager {
             InnerLog.w(TAG, "low memory")
         }
 
-        override fun onConfigurationChanged(newConfig: Configuration?) {
-            if (newConfig == null) return
+        override fun onConfigurationChanged(newConfig: Configuration) {
             InnerLog.i(TAG, "configuration changed $newConfig")
 
             // Checks the orientation of the screen
