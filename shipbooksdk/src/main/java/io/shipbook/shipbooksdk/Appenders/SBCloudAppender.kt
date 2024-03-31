@@ -12,7 +12,7 @@ import io.shipbook.shipbooksdk.Models.*
 import io.shipbook.shipbooksdk.Networking.ConnectionClient.request
 import io.shipbook.shipbooksdk.Networking.HttpMethod
 import io.shipbook.shipbooksdk.Networking.SessionManager
-import kotlinx.coroutines.DelicateCoroutinesApi
+//import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -30,7 +30,7 @@ import kotlin.concurrent.timerTask
  */
 
 
-@OptIn(DelicateCoroutinesApi::class)
+//@OptIn(DelicateCoroutinesApi::class)
 internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name, config) {
     // consts/
     private val TAG = SBCloudAppender::class.java.simpleName
