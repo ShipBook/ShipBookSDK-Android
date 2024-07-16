@@ -279,11 +279,20 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
                 if (response.ok) tempFile.delete()
                 else {
                     if (response.statusCode == -1) {
-                        InnerLog.i(TAG, "probably no internet connection")
+                        InnerLog.i(TAG, "problems with internet connection")
+                        concatTmpFile()
+                    }
+                    if (response.statusCode in 502..504){
+                        InnerLog.i(TAG, "temporary server problem with statusCode:" + response.statusCode )
                         concatTmpFile()
                     }
                     else {
                         InnerLog.i(TAG, "got error from the server with status code:" + response.statusCode)
+                        // adding user info in the case that it was added so that the user info will be added
+                        sessionsData.find { it.user != null }?.user?.let {
+                            saveToFile(it)
+                            createTimer()
+                        }
                     }
                 }
 
@@ -293,14 +302,12 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
                 InnerLog.e(TAG, "Had an error in send", e)
                 uploadingSavedData = false
             }
-
         }
         catch (e: Exception) {
             InnerLog.e(TAG, "Had an error in send", e)
             uploadingSavedData = false
             return
         }
-
     }
 
     private fun concatTmpFile() {
