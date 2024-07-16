@@ -31,8 +31,8 @@ internal data class Login(
         val osVersion: String = Build.VERSION.RELEASE ?: "", // "" for testing
         var appVersion: String = "",
         var appVersionCode: Int = -1,
-        val sdkVersion: String = "1.7.2",
-        val sdkVersionCode: Int = 10,
+        val sdkVersion: String = "1.8.1",
+        val sdkVersionCode: Int = 11,
         val manufacturer: String = Build.MANUFACTURER ?: "", // "" for testing
         val deviceModel: String = Build.MODEL ?: "", // "" for testing
         val deviceName: String = Build.DEVICE ?: "", // "" for testing
