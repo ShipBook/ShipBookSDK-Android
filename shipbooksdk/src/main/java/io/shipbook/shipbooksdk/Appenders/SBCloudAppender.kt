@@ -278,20 +278,22 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
                 val response = request("sessions/uploadSavedData", sessionsData, HttpMethod.POST)
                 if (response.ok) tempFile.delete()
                 else {
-                    if (response.statusCode == -1) {
-                        InnerLog.i(TAG, "problems with internet connection")
-                        concatTmpFile()
-                    }
-                    if (response.statusCode in 502..504){
-                        InnerLog.i(TAG, "temporary server problem with statusCode:" + response.statusCode )
-                        concatTmpFile()
-                    }
-                    else {
-                        InnerLog.i(TAG, "got error from the server with status code:" + response.statusCode)
-                        // adding user info in the case that it was added so that the user info will be added
-                        sessionsData.find { it.user != null }?.user?.let {
-                            saveToFile(it)
-                            createTimer()
+                    when (response.statusCode) {
+                        -1 -> {
+                            InnerLog.i(TAG, "problems with internet connection")
+                            concatTmpFile()
+                        }
+                        in 502..504 -> {
+                            InnerLog.i(TAG, "temporary server problem with statusCode:" + response.statusCode)
+                            concatTmpFile()
+                        }
+                        else -> {
+                            InnerLog.i(TAG, "got error from the server with status code:" + response.statusCode)
+                            // adding user info in the case that it was added so that the user info will be added
+                            sessionsData.find { it.user != null }?.user?.let {
+                                saveToFile(it)
+                                createTimer()
+                            }
                         }
                     }
                 }
