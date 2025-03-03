@@ -99,8 +99,11 @@ internal object SessionManager {
                 try {
                     if (response.data == null) throw Exception("No Data error")
                     val loginResponse = LoginResponse.create(response.data)
+                    if (loginResponse.token == null || loginResponse.token.length == 0) { // this can happen if the account past the limits of logs
+                        InnerLog.w(TAG, "Empty token: This can happen if the account past the limits of logs")
+                        return@launch
+                    };
                     token = loginResponse.token
-                    loginResponse.sessionUrl
                     sessionCompletion?.invoke(loginResponse.sessionUrl)
                     LogManager.config(loginResponse.config)
                     configFile!!.writeText(loginResponse.config.toJson().toString())
