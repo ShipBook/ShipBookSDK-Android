@@ -35,7 +35,7 @@ internal class ResponseData (val ok: Boolean, val statusCode: Int = -1, data: St
 
 
 internal object ConnectionClient {
-    var baseUrl = "https://api.shipbook.io/v1/"
+    var baseUrl = "https://api.shipbook.io/v2/"
 
     suspend fun request(url: String, data: List<BaseObj>, method:HttpMethod = HttpMethod.GET): ResponseData  {
         val jsonArray = JSONArray()
