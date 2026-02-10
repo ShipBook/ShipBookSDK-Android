@@ -153,9 +153,9 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
 
         var sessionLogData: SessionLogData? = null
         try {
-            val lines = file.readLines()
-            lines.forEach { line ->
+            file.forEachLine { line ->
                 val parts = line.split(FILE_CLASS_SEPARATOR, limit = 2)
+                if (parts.size < 2) return@forEachLine
                 val className = parts[0]
                 val classJson = parts[1]
                 when (className) {
@@ -313,7 +313,14 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
     }
 
     private fun concatTmpFile() {
-        if (file.isFile) tempFile.appendText(file.readText())
+        if (file.isFile) {
+            file.inputStream().use { input ->
+                java.io.FileOutputStream(tempFile, true).use { output ->
+                    input.copyTo(output)
+                }
+            }
+            file.delete()
+        }
         tempFile.renameTo(file)
     }
 }
