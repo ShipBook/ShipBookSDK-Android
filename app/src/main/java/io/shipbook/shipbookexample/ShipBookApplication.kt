@@ -2,6 +2,7 @@ package io.shipbook.shipbookexample
 
 import android.app.Application
 import io.shipbook.shipbooksdk.ShipBook
+import io.shipbook.shipbookexample.BuildConfig
 
 /*
  *
@@ -16,7 +17,8 @@ class ShipBookApplication : Application() {
         super.onCreate()
         ShipBook.enableInnerLog(true)
         ShipBook.ignoreViews(R.id.ignore, R.id.password)
-        ShipBook.start(this,"YOUR_APPID", "YOUR_APPKEY")
+        if (BuildConfig.SHIPBOOK_URL.isNotEmpty()) ShipBook.setConnectionUrl(BuildConfig.SHIPBOOK_URL)
+        ShipBook.start(this, BuildConfig.SHIPBOOK_APP_ID, BuildConfig.SHIPBOOK_APP_KEY)
         ShipBook.addWrapperClass(LogWrapper::class.java.name)
         ShipBook.registerUser("1")
     }

@@ -3,6 +3,10 @@ apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-android'
 
 
+def localProps = new Properties()
+def localPropsFile = rootProject.file('local.properties')
+if (localPropsFile.exists()) { localProps.load(localPropsFile.newDataInputStream()) }
+
 android {
     compileSdkVersion 34
     defaultConfig {
@@ -12,6 +16,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "SHIPBOOK_URL", "\"${localProps.getProperty('SHIPBOOK_URL', '')}\""
+        buildConfigField "String", "SHIPBOOK_APP_ID", "\"${localProps.getProperty('SHIPBOOK_APP_ID', '')}\""
+        buildConfigField "String", "SHIPBOOK_APP_KEY", "\"${localProps.getProperty('SHIPBOOK_APP_KEY', '')}\""
     }
     buildTypes {
         release {
@@ -21,6 +28,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     namespace 'io.shipbook.shipbookexample'
 }
