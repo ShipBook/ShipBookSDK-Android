@@ -9,8 +9,8 @@ import io.shipbook.shipbooksdk.Models.BaseLog
  *
  */
 
-internal typealias Config = Map<String, Any>
-internal abstract class BaseAppender(val name: String, val config: Config?) {
+typealias Config = Map<String, Any>
+abstract class BaseAppender(val name: String, val config: Config?) {
     abstract fun update(config: Config?)
     abstract fun push(log: BaseLog)
 }

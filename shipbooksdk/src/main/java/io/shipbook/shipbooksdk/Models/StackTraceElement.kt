@@ -9,7 +9,7 @@ import org.json.JSONObject
  *
  */
 
-internal data class StackTraceElement (val declaringClass: String,
+data class StackTraceElement (val declaringClass: String,
                                        val methodName: String,
                                        val fileName: String?,
                                        val lineNumber: Int): BaseObj {

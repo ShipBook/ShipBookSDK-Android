@@ -15,7 +15,7 @@ import java.util.*
  *
  */
 
-internal data class Message(val severity: Severity,
+data class Message(val severity: Severity,
                             val message: String,
                             var tag: String? = null,
                             var stackTrace: List<StackTraceElement>? = null,

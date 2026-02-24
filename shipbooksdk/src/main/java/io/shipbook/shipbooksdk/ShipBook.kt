@@ -1,6 +1,9 @@
 package io.shipbook.shipbooksdk
 
 import android.app.Application
+import io.shipbook.shipbooksdk.Appenders.AppenderFactory
+import io.shipbook.shipbooksdk.Appenders.BaseAppender
+import io.shipbook.shipbooksdk.Appenders.Config
 import io.shipbook.shipbooksdk.Events.ActionEventManager
 import io.shipbook.shipbooksdk.Models.Message
 import io.shipbook.shipbooksdk.Models.ScreenEvent
@@ -136,6 +139,17 @@ class ShipBook {
         @JvmStatic
         fun addWrapperClass(name: String) {
             Message.addIgnoreClass(name)
+        }
+
+        /**
+         * Register a custom appender type.
+         *
+         * @param type The type name that will match the server config.
+         * @param creator A factory function that creates the appender instance.
+         */
+        @JvmStatic
+        fun registerAppender(type: String, creator: (String, Config?) -> BaseAppender) {
+            AppenderFactory.register(type, creator)
         }
 
     }

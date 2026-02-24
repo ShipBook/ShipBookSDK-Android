@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger
 */
 
 
-internal abstract class BaseLog(val type: String,
+abstract class BaseLog(val type: String,
                                 open var orderId: Int = 0,
                                 open val time: Date = Date(),
                                 open val threadInfo: ThreadInfo = ThreadInfo()): BaseObj {

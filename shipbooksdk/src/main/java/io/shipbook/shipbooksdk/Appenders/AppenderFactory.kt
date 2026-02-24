@@ -8,7 +8,14 @@ package io.shipbook.shipbooksdk.Appenders
  */
 
 internal object AppenderFactory {
+    private val registry = mutableMapOf<String, (String, Config?) -> BaseAppender>()
+
+    fun register(type: String, creator: (String, Config?) -> BaseAppender) {
+        registry[type] = creator
+    }
+
     fun create(type: String, name: String, config: Config?) : BaseAppender? {
+        registry[type]?.let { return it(name, config) }
         when (type) {
             "ConsoleAppender" -> return ConsoleAppender(name, config)
             "SBCloudAppender", "SLCloudAppender" -> return SBCloudAppender(name, config)
