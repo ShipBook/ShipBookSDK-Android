@@ -2,7 +2,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.shipbook/shipbooksdk.svg)](https://central.sonatype.com/artifact/io.shipbook/shipbooksdk)
 
-Shipbook SDK for Android applications. Capture logs, errors, and exceptions from your Android apps and view them in the [Shipbook console](https://console.shipbook.io/).
+Shipbook SDK for Android applications. Capture logs, errors, and exceptions from your Android apps and view them in the [Shipbook console](https://console.shipbook.io/). Learn more at [shipbook.io](https://www.shipbook.io/).
 
 ## Installation
 
