@@ -1,7 +1,5 @@
 package io.shipbook.shipbooksdk
 
-import android.content.Intent
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import io.shipbook.shipbooksdk.Appenders.AppenderFactory
 import io.shipbook.shipbooksdk.Appenders.BaseAppender
 import io.shipbook.shipbooksdk.Models.BaseLog
@@ -9,6 +7,9 @@ import io.shipbook.shipbooksdk.Models.ConfigResponse
 import io.shipbook.shipbooksdk.Models.Message
 import io.shipbook.shipbooksdk.Models.Severity
 import io.shipbook.shipbooksdk.Networking.SessionManager
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /*
  *
@@ -18,6 +19,7 @@ import io.shipbook.shipbooksdk.Networking.SessionManager
  */
 
 internal typealias AppenderMap = MutableMap<String, BaseAppender>
+@OptIn(DelicateCoroutinesApi::class)
 internal object LogManager {
     class Logger (val key: String, val severity: Severity, val callStackSeverity: Severity, val appender: BaseAppender)
 
@@ -108,6 +110,6 @@ internal object LogManager {
         this.appenders = appenders
         this.loggers = loggers
 
-        LocalBroadcastManager.getInstance(SessionManager.appContext!!).sendBroadcast(Intent(BroadcastNames.CONFIG_CHANGE))
+        GlobalScope.launch(SessionManager.threadContext) { InternalEventBus.emitConfigChange() }
     }
 }

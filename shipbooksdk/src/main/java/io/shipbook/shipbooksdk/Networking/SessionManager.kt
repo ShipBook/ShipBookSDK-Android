@@ -3,8 +3,6 @@ package io.shipbook.shipbooksdk.Networking
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import android.content.Intent
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import io.shipbook.shipbooksdk.*
 import io.shipbook.shipbooksdk.Events.EventManager
 import io.shipbook.shipbooksdk.Models.*
@@ -13,7 +11,6 @@ import org.json.JSONObject
 import java.io.File
 import java.io.InputStream
 import java.net.URI
-import kotlin.coroutines.CoroutineContext
 
 
 /*
@@ -107,7 +104,7 @@ internal object SessionManager {
                     sessionCompletion?.invoke(loginResponse.sessionUrl)
                     LogManager.config(loginResponse.config)
                     configFile!!.writeText(loginResponse.config.toJson().toString())
-                    LocalBroadcastManager.getInstance(appContext!!).sendBroadcast(Intent(BroadcastNames.CONNECTED))
+                    InternalEventBus.emitSessionEvent(SessionEvent.Connected)
                 }
                 catch (e: Throwable) {
                     InnerLog.e(TAG, "There was a problem with the data", e)
@@ -144,7 +141,7 @@ internal object SessionManager {
                      phoneNumber: String?,
                      additionalInfo: Map<String, String>?) {
         user = User(userId, userName, fullName, email, phoneNumber, additionalInfo)
-        if (login != null) LocalBroadcastManager.getInstance(appContext!!).sendBroadcast(Intent(BroadcastNames.USER_CHANGE))
+        if (login != null) GlobalScope.launch(threadContext) { InternalEventBus.emitSessionEvent(SessionEvent.UserChange) }
     }
 
     fun logout() {

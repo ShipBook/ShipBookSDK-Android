@@ -1,16 +1,13 @@
 package io.shipbook.shipbooksdk
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import io.shipbook.shipbooksdk.Models.Message
 import io.shipbook.shipbooksdk.Models.Severity
 import io.shipbook.shipbooksdk.Networking.SessionManager
 import io.shipbook.shipbooksdk.Util.toInternal
-import java.util.*
-import kotlin.concurrent.schedule
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 /*
  *
@@ -33,6 +30,7 @@ import kotlin.concurrent.schedule
  *
  * @property tag The tag of the log
  */
+@OptIn(DelicateCoroutinesApi::class)
 class Log(val tag: String)  {
     @Suppress("PrivatePropertyName")
     private val TAG = Log::class.java.simpleName
@@ -41,15 +39,7 @@ class Log(val tag: String)  {
     @Volatile
     private var callStackSeverity = LogManager.getCallStackSeverity(tag)
 
-    private var counter = 0
-
-    private val broadcastReceiver =  object :  BroadcastReceiver() {
-        override fun onReceive(contxt: Context?, intent: Intent?) {
-            InnerLog.d(TAG, "got receiver configChange for tag $tag")
-            severity = LogManager.getSeverity(tag)
-            callStackSeverity = LogManager.getCallStackSeverity(tag)
-        }
-    }
+    private var configJob: Job? = null
 
     companion object {
         /**
@@ -175,28 +165,22 @@ class Log(val tag: String)  {
     }
 
     init {
-        InnerLog.d(TAG, "register broadcast receiver" )
-        addBroadcastReceiver()
+        InnerLog.d(TAG, "subscribing to config changes" )
+        configJob = GlobalScope.launch(SessionManager.threadContext) {
+            InternalEventBus.configChange.collect {
+                InnerLog.d(TAG, "got configChange for tag $tag")
+                severity = LogManager.getSeverity(tag)
+                callStackSeverity = LogManager.getCallStackSeverity(tag)
+            }
+        }
     }
 
     /**
      * the finalize function
      */
     protected fun finalize() {
-        InnerLog.d(TAG, "unregister broadcast receiver" )
-        if (SessionManager.appContext != null)
-            LocalBroadcastManager.getInstance(SessionManager.appContext!!).unregisterReceiver(broadcastReceiver)
-    }
-
-    private fun addBroadcastReceiver() {
-        InnerLog.d(TAG, "add broadcast receiver with counter $counter")
-        if (SessionManager.appContext != null && counter > 0) LocalBroadcastManager.getInstance(SessionManager.appContext!!)
-               .registerReceiver(broadcastReceiver, IntentFilter(BroadcastNames.CONFIG_CHANGE))
-        else Timer().schedule(0) { //for the case that the application has a getLogger then it will be initialized before the start
-            counter++
-            if (counter < 5) addBroadcastReceiver()
-            else InnerLog.d(TAG, "counter bigger than 5" )
-        }
+        InnerLog.d(TAG, "cancelling config subscription" )
+        configJob?.cancel()
     }
 
 

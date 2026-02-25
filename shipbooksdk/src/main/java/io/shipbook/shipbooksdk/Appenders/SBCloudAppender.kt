@@ -1,19 +1,16 @@
 package io.shipbook.shipbooksdk.Appenders
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import io.shipbook.shipbooksdk.BroadcastNames
 import io.shipbook.shipbooksdk.InnerLog
+import io.shipbook.shipbooksdk.InternalEventBus
 import io.shipbook.shipbooksdk.Models.*
+import io.shipbook.shipbooksdk.SessionEvent
 
 import io.shipbook.shipbooksdk.Networking.ConnectionClient.request
 import io.shipbook.shipbooksdk.Networking.HttpMethod
 import io.shipbook.shipbooksdk.Networking.SessionManager
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.File
@@ -48,26 +45,7 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
     @Volatile
     private var flushSize: Int = 40
 
-    val broadcastReceiver =  object :  BroadcastReceiver() {
-        override fun onReceive(contxt: Context, intent: Intent) {
-            when(intent.action) {
-                BroadcastNames.USER_CHANGE -> {
-                    InnerLog.d(TAG, "received user change")
-                    GlobalScope.launch(SessionManager.threadContext) {
-                        val user = SessionManager.login?.user
-                        user?.let {
-                            saveToFile(it)
-                            createTimer()
-                        }
-                    }
-                }
-                BroadcastNames.CONNECTED -> {
-                    InnerLog.d(TAG, "received connected")
-                    GlobalScope.launch(SessionManager.threadContext) { send() }
-                }
-            }
-        }
-    }
+    private var eventCollectionJob: Job? = null
 
     // file names
     val file: File
@@ -88,10 +66,24 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
         file = File(context?.filesDir, "CloudQueue.log")
         tempFile = File(context?.filesDir, "TempCloudQueue.log")
 
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(BroadcastNames.USER_CHANGE)
-        intentFilter.addAction(BroadcastNames.CONNECTED)
-        LocalBroadcastManager.getInstance(context!!).registerReceiver(broadcastReceiver, intentFilter)
+        eventCollectionJob = GlobalScope.launch(SessionManager.threadContext) {
+            InternalEventBus.sessionEvent.collect { event ->
+                when (event) {
+                    is SessionEvent.UserChange -> {
+                        InnerLog.d(TAG, "received user change")
+                        val user = SessionManager.login?.user
+                        user?.let {
+                            saveToFile(it)
+                            createTimer()
+                        }
+                    }
+                    is SessionEvent.Connected -> {
+                        InnerLog.d(TAG, "received connected")
+                        send()
+                    }
+                }
+            }
+        }
     }
 
     @Suppress("unused")
@@ -100,12 +92,11 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
     }
 
     override fun terminate() {
-        InnerLog.d(TAG, "terminate appender: unregister broadcast receiver and cancel timer")
+        InnerLog.d(TAG, "terminate appender: cancel event collection and timer")
         timer?.cancel()
         timer = null
-        if (SessionManager.appContext != null) {
-            LocalBroadcastManager.getInstance(SessionManager.appContext!!).unregisterReceiver(broadcastReceiver)
-        }
+        eventCollectionJob?.cancel()
+        eventCollectionJob = null
     }
 
 
