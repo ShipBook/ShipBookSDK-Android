@@ -12,7 +12,7 @@ import io.shipbook.shipbooksdk.Models.*
 import io.shipbook.shipbooksdk.Networking.ConnectionClient.request
 import io.shipbook.shipbooksdk.Networking.HttpMethod
 import io.shipbook.shipbooksdk.Networking.SessionManager
-//import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -30,14 +30,14 @@ import kotlin.concurrent.timerTask
  */
 
 
-//@OptIn(DelicateCoroutinesApi::class)
+@OptIn(DelicateCoroutinesApi::class)
 internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name, config) {
-    // consts/
-    private val TAG = SBCloudAppender::class.java.simpleName
-
-    private val FILE_CLASS_SEPARATOR = ": "
-    private val TOKEN = "token"
-    private val NEW_LINE_SEPARATOR = "\n"
+    companion object {
+        private val TAG = SBCloudAppender::class.java.simpleName
+        private const val FILE_CLASS_SEPARATOR = ": "
+        private const val TOKEN = "token"
+        private const val NEW_LINE_SEPARATOR = "\n"
+    }
 
     @Volatile
     private var maxTime: Double = 3.0
@@ -195,7 +195,7 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
     }
 
     private fun saveFlushQueue() {
-        flushQueue.forEach() { saveToFile(it)}
+        flushQueue.forEach { saveToFile(it) }
         flushQueue = LinkedBlockingQueue()
     }
 
@@ -280,7 +280,7 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
 
             // should be with current time and not with the original time that has nothing to do with it
             val currentTime = Date()
-            sessionsData.forEach() { it.login?.deviceTime = currentTime}
+            sessionsData.forEach { it.login?.deviceTime = currentTime }
             try {
                 val response = request("sessions/uploadSavedData", sessionsData, HttpMethod.POST)
                 if (response.ok) tempFile.delete()
