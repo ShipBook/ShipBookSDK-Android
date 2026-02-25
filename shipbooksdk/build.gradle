@@ -13,6 +13,8 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        buildConfigField "String", "VERSION_NAME", "\"${VERSION_NAME}\""
+        buildConfigField "int", "VERSION_CODE", "${VERSION_CODE}"
     }
 
     buildTypes {
@@ -24,6 +26,7 @@ android {
     sourceSets { main { res.srcDirs = ['src/main/res', 'src/main/res/raw'] } }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     namespace 'io.shipbook.shipbooksdk'
 }

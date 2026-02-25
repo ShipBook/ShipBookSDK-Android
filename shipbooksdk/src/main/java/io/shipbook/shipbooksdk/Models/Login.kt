@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.provider.Settings
+import io.shipbook.shipbooksdk.BuildConfig
 import io.shipbook.shipbooksdk.Networking.SessionManager
 import io.shipbook.shipbooksdk.ShipBook
 import io.shipbook.shipbooksdk.Util.DateHelper
@@ -31,8 +32,8 @@ internal data class Login(
         val osVersion: String = Build.VERSION.RELEASE ?: "", // "" for testing
         var appVersion: String = "",
         var appVersionCode: Int = -1,
-        val sdkVersion: String = "1.8.3",
-        val sdkVersionCode: Int = 12,
+        val sdkVersion: String = BuildConfig.VERSION_NAME,
+        val sdkVersionCode: Int = BuildConfig.VERSION_CODE,
         val manufacturer: String = Build.MANUFACTURER ?: "", // "" for testing
         val deviceModel: String = Build.MODEL ?: "", // "" for testing
         val deviceName: String = Build.DEVICE ?: "", // "" for testing
