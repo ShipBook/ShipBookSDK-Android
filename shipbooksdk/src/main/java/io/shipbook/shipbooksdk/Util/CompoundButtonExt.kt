@@ -1,5 +1,6 @@
 package io.shipbook.shipbooksdk.Util
 
+import android.annotation.SuppressLint
 import android.widget.CompoundButton
 import io.shipbook.shipbooksdk.InnerLog
 
@@ -11,6 +12,7 @@ import io.shipbook.shipbooksdk.InnerLog
  */
 
 internal val CompoundButton.onCheckedChangeListener : CompoundButton.OnCheckedChangeListener?
+    @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
     get() {
 
         var retrievedListener: CompoundButton.OnCheckedChangeListener? = null
@@ -18,11 +20,8 @@ internal val CompoundButton.onCheckedChangeListener : CompoundButton.OnCheckedCh
 
         try {
             val listenerField = Class.forName(viewStr).getDeclaredField("mOnCheckedChangeListener")
-
-            if (listenerField != null) {
-                listenerField.isAccessible = true
-                retrievedListener = listenerField.get(this) as? CompoundButton.OnCheckedChangeListener
-            }
+            listenerField.isAccessible = true
+            retrievedListener = listenerField.get(this) as? CompoundButton.OnCheckedChangeListener
         } catch (ex: NoSuchFieldException) {
             InnerLog.e("Reflection", "No Such Field.")
         } catch (ex: IllegalAccessException) {

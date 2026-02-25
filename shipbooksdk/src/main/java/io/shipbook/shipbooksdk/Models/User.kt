@@ -19,10 +19,10 @@ internal data class User(val userId:String,
     companion object {
         fun create(json: JSONObject) : User {
             val userId = json.optString("userId")
-            val userName = json.optString("userName", null)
-            val fullName = json.optString("fullName", null)
-            val email = json.optString("email", null)
-            val phoneNumber = json.optString("phoneNumber", null)
+            val userName = json.opt("userName") as? String
+            val fullName = json.opt("fullName") as? String
+            val email = json.opt("email") as? String
+            val phoneNumber = json.opt("phoneNumber") as? String
             var additionalInfo: MutableMap<String, String>? =  null
             val additionalInfoObject = json.optJSONObject("additionalInfo")
             if (additionalInfoObject != null) {

@@ -13,7 +13,7 @@ import io.shipbook.shipbooksdk.InnerLog
  */
 
 internal val View.onClickListener : View.OnClickListener?
-        @SuppressLint("PrivateApi")
+        @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
         get(){
             var retrievedListener: View.OnClickListener? = null
             val viewStr = "android.view.View"
@@ -21,16 +21,11 @@ internal val View.onClickListener : View.OnClickListener?
 
             try {
                 val listenerField = Class.forName(viewStr).getDeclaredField("mListenerInfo")
-                var listenerInfo: Any? = null
+                listenerField.isAccessible = true
+                val listenerInfo = listenerField.get(this)
 
-                if (listenerField != null) {
-                    listenerField.isAccessible = true
-                    listenerInfo = listenerField.get(this)
-                }
-
-                val clickListenerField = Class.forName(lInfoStr).getDeclaredField("mOnClickListener")
-
-                if (clickListenerField != null && listenerInfo != null) {
+                if (listenerInfo != null) {
+                    val clickListenerField = Class.forName(lInfoStr).getDeclaredField("mOnClickListener")
                     retrievedListener = clickListenerField.get(listenerInfo) as? View.OnClickListener
                 }
             } catch (ex: NoSuchFieldException) {

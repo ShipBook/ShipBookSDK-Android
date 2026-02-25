@@ -1,5 +1,6 @@
 package io.shipbook.shipbooksdk.Util
 
+import android.annotation.SuppressLint
 import android.widget.SeekBar
 import io.shipbook.shipbooksdk.InnerLog
 
@@ -11,6 +12,7 @@ import io.shipbook.shipbooksdk.InnerLog
  */
 
 internal val SeekBar.onSeekBarChangeListener : SeekBar.OnSeekBarChangeListener?
+    @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
     get() {
 
         var retrievedListener: SeekBar.OnSeekBarChangeListener? = null
@@ -18,11 +20,8 @@ internal val SeekBar.onSeekBarChangeListener : SeekBar.OnSeekBarChangeListener?
 
         try {
             val listenerField = Class.forName(viewStr).getDeclaredField("mOnSeekBarChangeListener")
-
-            if (listenerField != null) {
-                listenerField.isAccessible = true
-                retrievedListener = listenerField.get(this) as? SeekBar.OnSeekBarChangeListener
-            }
+            listenerField.isAccessible = true
+            retrievedListener = listenerField.get(this) as? SeekBar.OnSeekBarChangeListener
         } catch (ex: NoSuchFieldException) {
             InnerLog.e("Reflection", "No Such Field.")
         } catch (ex: IllegalAccessException) {

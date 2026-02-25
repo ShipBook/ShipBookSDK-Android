@@ -80,7 +80,7 @@ internal data class Login(
             val language = json.optString("language")
             val isDebug = json.getBoolean("isDebug")
             val isObfuscated = json.getBoolean("isObfuscated")
-            val user = if (json.has("user")) User.create(json.optJSONObject("user")) else null
+            val user = if (json.has("user")) User.create(json.optJSONObject("user")!!) else null
             return Login(appId, appKey, os, appName, udid, time, deviceTime, osVersion, appVersion, appVersionCode, sdkVersion, sdkVersionCode, manufacturer, deviceModel, deviceName, language, isDebug, isObfuscated, user)
         }
     }

@@ -6,7 +6,10 @@ import android.content.Context
 import io.shipbook.shipbooksdk.*
 import io.shipbook.shipbooksdk.Events.EventManager
 import io.shipbook.shipbooksdk.Models.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import org.json.JSONObject
 import java.io.File
 import java.io.InputStream
@@ -21,6 +24,7 @@ import java.net.URI
  */
 
 @SuppressLint("StaticFieldLeak")
+@OptIn(DelicateCoroutinesApi::class)
 internal object SessionManager {
     val threadContext = newSingleThreadContext("shipbook") // need this so that there is no problem of threading
                                                                  // kotlin will redo this implementation in the future and then we will need to change
@@ -96,7 +100,7 @@ internal object SessionManager {
                 try {
                     if (response.data == null) throw Exception("No Data error")
                     val loginResponse = LoginResponse.create(response.data)
-                    if (loginResponse.token == null || loginResponse.token.length == 0) { // this can happen if the account past the limits of logs
+                    if (loginResponse.token.isEmpty()) { // this can happen if the account past the limits of logs
                         InnerLog.w(TAG, "Empty token: This can happen if the account past the limits of logs")
                         return@launch
                     };
