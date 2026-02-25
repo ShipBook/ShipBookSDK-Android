@@ -13,4 +13,5 @@ typealias Config = Map<String, Any>
 abstract class BaseAppender(val name: String, val config: Config?) {
     abstract fun update(config: Config?)
     abstract fun push(log: BaseLog)
+    open fun terminate() {}
 }

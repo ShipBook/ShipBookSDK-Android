@@ -96,9 +96,16 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
 
     @Suppress("unused")
     protected fun finalize() {
-        InnerLog.d(TAG, "unregister broadcast receiver" )
-        if (SessionManager.appContext == null) return
-        LocalBroadcastManager.getInstance(SessionManager.appContext!!).unregisterReceiver(broadcastReceiver)
+        terminate()
+    }
+
+    override fun terminate() {
+        InnerLog.d(TAG, "terminate appender: unregister broadcast receiver and cancel timer")
+        timer?.cancel()
+        timer = null
+        if (SessionManager.appContext != null) {
+            LocalBroadcastManager.getInstance(SessionManager.appContext!!).unregisterReceiver(broadcastReceiver)
+        }
     }
 
 

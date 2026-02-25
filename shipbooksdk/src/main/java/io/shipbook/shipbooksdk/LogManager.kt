@@ -27,6 +27,7 @@ internal object LogManager {
     var loggers: MutableList<Logger> = mutableListOf()
 
     fun clear() {
+        appenders.forEach { it.value.terminate() }
         appenders = mutableMapOf()
         loggers = mutableListOf()
     }
@@ -70,10 +71,11 @@ internal object LogManager {
     }
 
     fun config(config: ConfigResponse) {
+        val oldAppenders = this.appenders
         // appenders
         val appenders: AppenderMap = mutableMapOf()
         for (appender in config.appenders) {
-            val origAppender = this.appenders[appender.name]
+            val origAppender = oldAppenders[appender.name]
             if (origAppender != null) {
                 origAppender.update(appender.config)
                 appenders[appender.name] = origAppender
@@ -93,6 +95,13 @@ internal object LogManager {
                         it
                         )
                 loggers.add(tempLogger)
+            }
+        }
+
+        // terminate old appenders that are not in the new config
+        oldAppenders.forEach { (name, appender) ->
+            if (!appenders.containsKey(name)) {
+                appender.terminate()
             }
         }
 
