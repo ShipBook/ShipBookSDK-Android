@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.vanniktech.maven.publish'
 apply plugin: 'kotlin-parcelize'
-apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 34
@@ -29,12 +28,23 @@ android {
         buildConfig = true
     }
     namespace 'io.shipbook.shipbooksdk'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.fragment:fragment-ktx:1.4.1'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:core:1.5.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
