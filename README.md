@@ -101,13 +101,13 @@ Log.v("MyTag", "Trace info")
 2. Create a new application in the console
 3. Copy your App ID and App Key from the application settings
 
-For full setup instructions, see the [Android documentation](https://docs.shipbook.io/android-log-integration).
+For full setup instructions, see the [Android documentation](https://www.shipbook.io/docs/android-log-integration).
 
 ## Links
 
 - [Shipbook Website](https://www.shipbook.io/)
 - [Shipbook Console](https://console.shipbook.io/)
-- [Documentation](https://docs.shipbook.io/)
+- [Documentation](https://www.shipbook.io/docs/)
 - [GitHub Repository](https://github.com/ShipBook/ShipBookSDK-Android)
 
 ## Author
