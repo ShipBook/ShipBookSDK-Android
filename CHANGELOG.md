@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.1
+- Stop retrying `loginSdk` after a 4xx response — broken credentials (bad appId/appKey, app deleted) no longer cause a per-timer-tick loop against the server until the next app start.
+- Refresh path also sets the no-retry flag on a 4xx refresh response so it doesn't fall through to a fresh `loginSdk` that would 4xx too.
+
 ## 1.9.0
 - Replaced deprecated `LocalBroadcastManager` with Kotlin `SharedFlow` for internal event handling.
 - Removed `androidx.localbroadcastmanager` dependency.
