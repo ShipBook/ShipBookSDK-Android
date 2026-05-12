@@ -57,9 +57,14 @@ internal object SessionManager {
     @Volatile
     var isInLoginRequest = false
 
+    // Set when loginSdk got a 4xx — integration is wrong (bad appId/appKey, app deleted, etc.). Retrying won't fix it; suppress further attempts in this process so we don't hammer the server.
+    @Volatile
+    private var loginFailedPermanently = false
+
     val connected: Boolean
         get() {
             if (token != null) return true
+            if (loginFailedPermanently) return false
             innerLogin()
             return false
         }
@@ -80,6 +85,7 @@ internal object SessionManager {
             this.appKey = appKey
             this.sessionCompletion = completion
             login = Login(appId, appKey)
+            loginFailedPermanently = false
             innerLogin()
         }
         catch (t: Throwable) {
@@ -89,7 +95,7 @@ internal object SessionManager {
     }
 
     private fun innerLogin() {
-        if (isInLoginRequest || login == null) return
+        if (isInLoginRequest || login == null || loginFailedPermanently) return
         isInLoginRequest = true
         token = null
         GlobalScope.launch(threadContext) {
@@ -113,6 +119,11 @@ internal object SessionManager {
                 catch (e: Throwable) {
                     InnerLog.e(TAG, "There was a problem with the data", e)
                 }
+            }
+            else if (response.statusCode in 400..499) {
+                // 4xx on loginSdk = integration error (bad appId/appKey, app deleted). Retrying won't help — stop until the app is restarted or logout/login is called.
+                loginFailedPermanently = true
+                InnerLog.e(TAG, "loginSdk rejected with ${response.statusCode} — check appId/appKey. Will not retry until next app start.")
             }
             else {
                 InnerLog.e(TAG, "The response not ok")
@@ -164,9 +175,16 @@ internal object SessionManager {
         token = null
         val response = ConnectionClient.request("auth/refreshSdkToken", refreshToken.toJson().toString(), HttpMethod.POST)
         try {
-            if (!response.ok) return false
+            if (!response.ok) {
+                if (response.statusCode in 400..499) {
+                    // 4xx on refresh = integration error (app deleted, wrong appKey, bad JWT). Same as loginSdk failure — stop retrying until next app start instead of falling through to a fresh loginSdk that would 4xx too.
+                    loginFailedPermanently = true
+                    InnerLog.e(TAG, "refreshSdkToken rejected with ${response.statusCode} — check appId/appKey. Will not retry until next app start.")
+                }
+                return false
+            }
             if (response.data == null) {
-                InnerLog.e(TAG, "missing data")
+                InnerLog.e(TAG, "missing data on refresh — leaving token null so the next cycle falls back to a fresh loginSdk")
                 return false
             }
 
