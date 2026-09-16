@@ -11,6 +11,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import org.json.JSONObject
+import io.shipbook.shipbooksdk.Util.writeTextAtomically
 import java.io.File
 import java.io.InputStream
 import java.net.URI
@@ -70,28 +71,37 @@ internal object SessionManager {
         }
 
     fun login(application: Application, appId: String, appKey: String, completion: ((String)->Unit)?, userConfig: URI?) {
-        try {
-            this.application = application
-            configFile = File(appContext?.filesDir, "config.json")
-            when {
-                configFile!!.isFile() && configFile!!.length() > 0 -> readConfig(configFile!!)
-                userConfig != null -> {
-                    val config = File(userConfig)
-                    readConfig(config)
-                }
-                else -> readConfig(appContext!!.resources.openRawResource(R.raw.config))
+        this.application = application
+        this.appKey = appKey
+        this.sessionCompletion = completion
+        login = Login(appId, appKey)
+        loginFailedPermanently = false
+        configFile = File(appContext!!.filesDir, "config.json")
+
+        // Config loading is isolated from login setup so a bad config can never leave the SDK without a Login and unable to ever connect.
+        var loadedCachedConfig = false
+        if (configFile!!.isFile && configFile!!.length() > 0) {
+            try {
+                readConfig(configFile!!)
+                loadedCachedConfig = true
             }
-
-            this.appKey = appKey
-            this.sessionCompletion = completion
-            login = Login(appId, appKey)
-            loginFailedPermanently = false
-            innerLogin()
+            catch (t: Throwable) {
+                // A crash or power loss mid-write leaves garbage here; treat it as absent instead of failing every start until app data is cleared.
+                InnerLog.w(TAG, "cached config is corrupt, deleting it and falling back to the default config", t)
+                configFile!!.delete()
+            }
         }
-        catch (t: Throwable) {
-            InnerLog.e(TAG, "login file failed", t)
+        if (!loadedCachedConfig) {
+            try {
+                if (userConfig != null) readConfig(File(userConfig))
+                else readConfig(appContext!!.resources.openRawResource(R.raw.config))
+            }
+            catch (t: Throwable) {
+                InnerLog.e(TAG, "reading config failed", t)
+            }
         }
 
+        innerLogin()
     }
 
     private fun innerLogin() {
@@ -113,7 +123,7 @@ internal object SessionManager {
                     token = loginResponse.token
                     sessionCompletion?.invoke(loginResponse.sessionUrl)
                     LogManager.config(loginResponse.config)
-                    configFile!!.writeText(loginResponse.config.toJson().toString())
+                    configFile!!.writeTextAtomically(loginResponse.config.toJson().toString())
                     InternalEventBus.emitSessionEvent(SessionEvent.Connected)
                 }
                 catch (e: Throwable) {
