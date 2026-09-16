@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.shipbook.shipbooksdk.Models.ConfigResponse
 import io.shipbook.shipbooksdk.Networking.SessionManager
+import io.shipbook.shipbooksdk.Util.writeTextAtomically
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.*
@@ -77,12 +78,10 @@ class SessionManagerTest {
     }
 
     @Test
-    fun writeConfigAtomicallyProducesParsableFileAndNoTempLeftover() {
-        SessionManager.configFile = configFile
+    fun writeTextAtomicallyReplacesContentAndLeavesNoTempFile() {
         configFile.writeText("stale")
-        val config = ConfigResponse.create(JSONObject(customConfig))
 
-        SessionManager.writeConfigAtomically(config)
+        configFile.writeTextAtomically(customConfig)
 
         val written = ConfigResponse.create(JSONObject(configFile.readText()))
         assertEquals(1, written.appenders.size)

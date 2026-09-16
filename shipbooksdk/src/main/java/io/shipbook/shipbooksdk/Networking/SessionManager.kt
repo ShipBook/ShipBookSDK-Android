@@ -11,9 +11,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import org.json.JSONObject
+import io.shipbook.shipbooksdk.Util.writeTextAtomically
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import java.io.InputStream
 import java.net.URI
 
@@ -124,7 +123,7 @@ internal object SessionManager {
                     token = loginResponse.token
                     sessionCompletion?.invoke(loginResponse.sessionUrl)
                     LogManager.config(loginResponse.config)
-                    writeConfigAtomically(loginResponse.config)
+                    configFile!!.writeTextAtomically(loginResponse.config.toJson().toString())
                     InternalEventBus.emitSessionEvent(SessionEvent.Connected)
                 }
                 catch (e: Throwable) {
@@ -141,17 +140,6 @@ internal object SessionManager {
             }
         }
 
-    }
-
-    // Plain writeText truncates in place; a kill between truncate and flush left a non-JSON config.json that blocked login on every later start.
-    internal fun writeConfigAtomically(config: ConfigResponse) {
-        val target = configFile!!
-        val temp = File(target.parentFile, "${target.name}.tmp")
-        FileOutputStream(temp).use {
-            it.write(config.toJson().toString().toByteArray())
-            it.fd.sync()
-        }
-        if (!temp.renameTo(target)) throw IOException("failed to rename ${temp.name} to ${target.name}")
     }
 
     private fun readConfig(input: InputStream) {
