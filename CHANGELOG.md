@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.2
+- Fixed a case where the SDK never logged in again after its cached `config.json` was left corrupt by a crash or power loss mid-write. The corrupt file blocked login on every later start until app data was cleared. The SDK now discards an unreadable cached config, falls back to the default config, and logs in normally.
+- The cached config is now written atomically (temp file + fsync + rename) so a kill mid-write can no longer leave a partially written file behind.
+
 ## 1.9.1
 - Stop retrying `loginSdk` after a 4xx response — broken credentials (bad appId/appKey, app deleted) no longer cause a per-timer-tick loop against the server until the next app start.
 - Refresh path also sets the no-retry flag on a 4xx refresh response so it doesn't fall through to a fresh `loginSdk` that would 4xx too.
