@@ -27,6 +27,8 @@ import java.net.URI
 @SuppressLint("StaticFieldLeak")
 @OptIn(DelicateCoroutinesApi::class)
 internal object SessionManager {
+    private const val SESSION_LINK_HEADER = "x-shipbook-session"
+
     val threadContext = newSingleThreadContext("shipbook") // need this so that there is no problem of threading
                                                                  // kotlin will redo this implementation in the future and then we will need to change
                                                                  // the api. It might be that they will use the same api and then no changes will needed
@@ -38,6 +40,8 @@ internal object SessionManager {
         get() = application?.applicationContext
     @Volatile
     var token: String? = null
+    @Volatile
+    var sessionLink: String? = null
 
     var sessionCompletion: ((String)->Unit)? = null
 
@@ -108,6 +112,7 @@ internal object SessionManager {
         if (isInLoginRequest || login == null || loginFailedPermanently) return
         isInLoginRequest = true
         token = null
+        sessionLink = null
         GlobalScope.launch(threadContext) {
             InnerLog.d(TAG, "current thread: ${Thread.currentThread().name}")
             val response = ConnectionClient.request("auth/loginSdk", login?.toJson().toString(), HttpMethod.POST)
@@ -121,6 +126,7 @@ internal object SessionManager {
                         return@launch
                     };
                     token = loginResponse.token
+                    sessionLink = loginResponse.sessionLink
                     sessionCompletion?.invoke(loginResponse.sessionUrl)
                     LogManager.config(loginResponse.config)
                     configFile!!.writeTextAtomically(loginResponse.config.toJson().toString())
@@ -209,5 +215,11 @@ internal object SessionManager {
         finally {
             isInLoginRequest = false
         }
+    }
+
+    // Empty until login completes and on silenced devices, so callers can always add it.
+    fun getSessionHeaders(): Map<String, String> {
+        val sessionLink = sessionLink ?: return emptyMap()
+        return mapOf(SESSION_LINK_HEADER to sessionLink)
     }
 }

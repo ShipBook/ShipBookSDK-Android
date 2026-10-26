@@ -77,6 +77,22 @@ ShipBook.registerUser(
 ShipBook.logout()
 ```
 
+### Link Sessions with Your Backend
+
+Add the session headers to requests toward your own backend, and the Shipbook console links this app session to the sessions those requests create in your Node.js backend. With OkHttp, add them once in an interceptor:
+
+```kotlin
+val client = OkHttpClient.Builder()
+    .addInterceptor { chain ->
+        val request = chain.request().newBuilder()
+        ShipBook.getSessionHeaders().forEach { (name, value) -> request.header(name, value) }
+        chain.proceed(request.build())
+    }
+    .build()
+```
+
+It returns an empty map until login completes, so adding it is always safe.
+
 ### Screen Tracking
 
 ```kotlin

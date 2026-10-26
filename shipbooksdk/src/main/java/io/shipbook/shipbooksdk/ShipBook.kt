@@ -101,6 +101,16 @@ class ShipBook {
         }
 
         /**
+         * Headers to attach to requests toward your own backend so its Shipbook sessions link back to this app session.
+         *
+         * @return An empty map until login completes, so adding it to a request is always safe.
+         */
+        @JvmStatic
+        fun getSessionHeaders(): Map<String, String> {
+            return SessionManager.getSessionHeaders()
+        }
+
+        /**
          * Ignore Views
          *
          * These views will be ignored for action events. This does that if there is private information in a view it won't log the information.
