@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.shipbook.shipbooksdk.Models.*
 import io.shipbook.shipbooksdk.Networking.SessionManager
+import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert.*
 import org.junit.Before
@@ -152,6 +153,21 @@ class JSONTest {
         val loginResponse2 = LoginResponse.create(loginResponse.toJson())
         assertEquals(loginResponse, loginResponse2)
 
+    }
+
+    @Test
+    fun loginResponseSessionLink() {
+        val json = JSONObject()
+            .put("token", "testToken")
+            .put("sessionUrl", "https://console.shipbook.io/session")
+            .put("sessionLink", "1:698ad6e6595b3f6a7590b24f:66f1c2a9e4b0d3f8a1b2c3d4")
+            .put("config", JSONObject().put("appenders", JSONArray()).put("loggers", JSONArray()))
+        val loginResponse = LoginResponse.create(json)
+        assertEquals("1:698ad6e6595b3f6a7590b24f:66f1c2a9e4b0d3f8a1b2c3d4", loginResponse.sessionLink)
+        assertEquals(loginResponse, LoginResponse.create(loginResponse.toJson()))
+
+        json.remove("sessionLink")
+        assertNull(LoginResponse.create(json).sessionLink)
     }
 
     @Test

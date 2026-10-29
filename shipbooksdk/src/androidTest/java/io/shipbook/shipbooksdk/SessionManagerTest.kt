@@ -42,6 +42,7 @@ class SessionManagerTest {
         LogManager.clear()
         SessionManager.login = null
         SessionManager.token = null
+        SessionManager.sessionLink = null
         configFile.delete()
     }
 
@@ -87,5 +88,17 @@ class SessionManagerTest {
         assertEquals(1, written.appenders.size)
         assertEquals("cachedConsole", written.appenders[0].name)
         assertFalse(File(application.filesDir, "config.json.tmp").exists())
+    }
+
+    @Test
+    fun sessionHeadersCarryTheSessionLink() {
+        SessionManager.sessionLink = "1:698ad6e6595b3f6a7590b24f:66f1c2a9e4b0d3f8a1b2c3d4"
+
+        assertEquals(mapOf("x-shipbook-session" to "1:698ad6e6595b3f6a7590b24f:66f1c2a9e4b0d3f8a1b2c3d4"), ShipBook.getSessionHeaders())
+    }
+
+    @Test
+    fun sessionHeadersAreEmptyBeforeLogin() {
+        assertEquals(emptyMap<String, String>(), ShipBook.getSessionHeaders())
     }
 }
