@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.0
+- Added `ShipBook.getSessionHeaders()`. Add its headers to requests toward your own backend, and the Shipbook console links this app session to the sessions those requests create in your Node.js backend. It returns an empty map until login completes, so adding it is always safe.
+
 ## 1.9.2
 - Fixed a case where the SDK never logged in again after its cached `config.json` was left corrupt by a crash or power loss mid-write. The corrupt file blocked login on every later start until app data was cleared. The SDK now discards an unreadable cached config, falls back to the default config, and logs in normally.
 - The cached config is now written atomically (temp file + fsync + rename) so a kill mid-write can no longer leave a partially written file behind.
