@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.Shop" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">#2E5E4E</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryVariant">#24493D</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:textColorPrimary">#1F1F1F</item>
+        <item name="android:textColor">#1F1F1F</item>
+    </style>
+</resources>
