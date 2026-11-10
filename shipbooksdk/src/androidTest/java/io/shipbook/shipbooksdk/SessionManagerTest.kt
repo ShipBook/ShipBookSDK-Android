@@ -4,21 +4,16 @@ import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import io.shipbook.shipbooksdk.Models.ConfigResponse
 import io.shipbook.shipbooksdk.Networking.SessionManager
-import io.shipbook.shipbooksdk.Util.writeTextAtomically
-import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class SessionManagerTest {
     private lateinit var application: Application
-    private lateinit var configFile: File
 
     private val customConfig = """
         {
@@ -31,9 +26,8 @@ class SessionManagerTest {
     fun setUp() {
         application = ApplicationProvider.getApplicationContext<Context>() as Application
         SessionManager.application = application
-        configFile = File(application.filesDir, "config.json")
-        configFile.delete()
-        File(application.filesDir, "config.json.tmp").delete()
+        Storage.init(application)
+        Storage.remove("config")
         LogManager.clear()
     }
 
@@ -43,29 +37,29 @@ class SessionManagerTest {
         SessionManager.login = null
         SessionManager.token = null
         SessionManager.sessionLink = null
-        configFile.delete()
+        Storage.remove("config")
     }
 
     @Test
     fun corruptCachedConfigIsDiscardedAndLoginStillHappens() {
-        configFile.writeBytes(ByteArray(300) { 0xFF.toByte() })
+        Storage.setString("config", "not json")
 
         SessionManager.login(application, "appId", "appKey", null, null)
 
         assertNotNull("login must be set up even when the cached config is unreadable", SessionManager.login)
-        assertFalse("corrupt cache must be deleted so the next start doesn't hit it again", configFile.exists())
+        assertNull("corrupt cache must be deleted so the next start doesn't hit it again", Storage.getString("config"))
         assertTrue("bundled config must be loaded as the fallback", LogManager.appenders.containsKey("cloud"))
         assertTrue(LogManager.appenders.containsKey("console"))
     }
 
     @Test
     fun validCachedConfigIsUsed() {
-        configFile.writeText(customConfig)
+        Storage.setString("config", customConfig)
 
         SessionManager.login(application, "appId", "appKey", null, null)
 
         assertNotNull(SessionManager.login)
-        assertTrue(configFile.exists())
+        assertEquals(customConfig, Storage.getString("config"))
         assertTrue(LogManager.appenders.containsKey("cachedConsole"))
         assertFalse(LogManager.appenders.containsKey("cloud"))
     }
@@ -76,18 +70,6 @@ class SessionManagerTest {
 
         assertNotNull(SessionManager.login)
         assertTrue(LogManager.appenders.containsKey("cloud"))
-    }
-
-    @Test
-    fun writeTextAtomicallyReplacesContentAndLeavesNoTempFile() {
-        configFile.writeText("stale")
-
-        configFile.writeTextAtomically(customConfig)
-
-        val written = ConfigResponse.create(JSONObject(configFile.readText()))
-        assertEquals(1, written.appenders.size)
-        assertEquals("cachedConsole", written.appenders[0].name)
-        assertFalse(File(application.filesDir, "config.json.tmp").exists())
     }
 
     @Test
