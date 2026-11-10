@@ -7,10 +7,14 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.shipbook.shipbooksdk.Appenders.SBCloudAppender
 import io.shipbook.shipbooksdk.Models.*
 import io.shipbook.shipbooksdk.Networking.SessionManager
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.*
+import java.util.concurrent.CountDownLatch
 
 /*
  *
@@ -19,6 +23,7 @@ import java.util.*
  *
  */
 
+@OptIn(DelicateCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 class AppenderTest {
     @Test
@@ -68,5 +73,47 @@ class AppenderTest {
 ////        val sessionsDataRet = JSON.parse<List<SessionLogData>>(serialized)
 //        assertEquals(sessionsData, sessionsDataRet)
 
+    }
+
+    private fun crashAppender(): SBCloudAppender {
+        val application = ApplicationProvider.getApplicationContext<Context>() as Application
+        SessionManager.application = application
+        SessionManager.token = "testing"
+        val cloudAppender = SBCloudAppender("cloud", null)
+        cloudAppender.file.delete()
+        return cloudAppender
+    }
+
+    @Test
+    fun exceptionIsSavedBeforePushReturns() {
+        val cloudAppender = crashAppender()
+        val event = ConfigEvent(Orientation.Portrait)
+        val exception = Exception("java.lang.NullPointerException", "crash", listOf(StackTraceElement("com.example.shop.OrderActivity", "onCreate", "OrderActivity.kt", 42)))
+
+        cloudAppender.push(event)
+        cloudAppender.push(exception)
+
+        val sessionsData = cloudAppender.loadFromFile(cloudAppender.file)
+        assertEquals(1, sessionsData.size)
+        assertEquals(listOf(event, exception), sessionsData[0].logs)
+        cloudAppender.terminate()
+    }
+
+    @Test
+    fun exceptionIsSavedWhileShipbookThreadIsBusy() {
+        val cloudAppender = crashAppender()
+        val release = CountDownLatch(1)
+        GlobalScope.launch(SessionManager.threadContext) { release.await() }
+        val exception = Exception("java.lang.NullPointerException", "crash", listOf(StackTraceElement("com.example.shop.OrderActivity", "onCreate", "OrderActivity.kt", 42)))
+
+        try {
+            cloudAppender.push(exception)
+            val sessionsData = cloudAppender.loadFromFile(cloudAppender.file)
+            assertEquals(listOf<BaseLog>(exception), sessionsData[0].logs)
+        }
+        finally {
+            release.countDown()
+            cloudAppender.terminate()
+        }
     }
 }
