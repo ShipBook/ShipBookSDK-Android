@@ -20,8 +20,11 @@ internal object ExceptionManager {
 
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             InnerLog.e(TAG,"catch uncaught exception")
-            val stackTrace = throwable.stackTrace.toInternal()
-            val exception = Exception(throwable.javaClass.name, throwable.message, stackTrace)
+            // ActivityThread wraps lifecycle crashes, so only the root cause carries the app's frames.
+            val seen = HashSet<Throwable>()
+            val rootCause = generateSequence(throwable) { it.cause }.takeWhile { seen.add(it) }.last()
+            val stackTrace = rootCause.stackTrace.toInternal()
+            val exception = Exception(rootCause.javaClass.name, rootCause.message ?: throwable.message, stackTrace)
             LogManager.push(exception)
 
             if (oldHandler != null) oldHandler.uncaughtException(thread, throwable)
