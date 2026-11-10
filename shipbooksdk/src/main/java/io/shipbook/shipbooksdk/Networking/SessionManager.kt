@@ -11,9 +11,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import org.json.JSONObject
-import java.io.File
-import java.io.InputStream
-import java.net.URI
 
 
 /*
@@ -73,7 +70,7 @@ internal object SessionManager {
             return false
         }
 
-    fun login(application: Application, appId: String, appKey: String, completion: ((String)->Unit)?, userConfig: URI?) {
+    fun login(application: Application, appId: String, appKey: String, completion: ((String)->Unit)?) {
         this.application = application
         this.appKey = appKey
         this.sessionCompletion = completion
@@ -94,15 +91,8 @@ internal object SessionManager {
                 StorageManager.remove(CONFIG_KEY)
             }
         }
-        if (!loadedCachedConfig) {
-            try {
-                if (userConfig != null) readConfig(File(userConfig))
-                else readConfig(appContext!!.resources.openRawResource(R.raw.config))
-            }
-            catch (t: Throwable) {
-                InnerLog.e(TAG, "reading config failed", t)
-            }
-        }
+        // The bundled config ships with this SDK; failing to read it is a bug to surface, not a state to handle.
+        if (!loadedCachedConfig) readConfig(appContext!!.resources.openRawResource(R.raw.config).bufferedReader().use { it.readText() })
 
         innerLogin()
     }
@@ -147,14 +137,6 @@ internal object SessionManager {
 
     }
 
-    private fun readConfig(input: InputStream) {
-        val configString = input.bufferedReader().use { it.readText() }
-        readConfig(configString)
-    }
-    private fun readConfig(file: File) {
-        val configString = file.readText()
-        readConfig(configString)
-    }
     private fun readConfig(configString: String) {
         val config = ConfigResponse.create(JSONObject(configString))
 
