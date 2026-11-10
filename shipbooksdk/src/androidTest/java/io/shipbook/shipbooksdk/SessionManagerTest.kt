@@ -26,8 +26,7 @@ class SessionManagerTest {
     fun setUp() {
         application = ApplicationProvider.getApplicationContext<Context>() as Application
         SessionManager.application = application
-        Storage.init(application)
-        Storage.remove("config")
+        StorageManager.remove("config")
         LogManager.clear()
     }
 
@@ -37,29 +36,29 @@ class SessionManagerTest {
         SessionManager.login = null
         SessionManager.token = null
         SessionManager.sessionLink = null
-        Storage.remove("config")
+        StorageManager.remove("config")
     }
 
     @Test
     fun corruptCachedConfigIsDiscardedAndLoginStillHappens() {
-        Storage.setString("config", "not json")
+        StorageManager.setString("config", "not json")
 
         SessionManager.login(application, "appId", "appKey", null, null)
 
         assertNotNull("login must be set up even when the cached config is unreadable", SessionManager.login)
-        assertNull("corrupt cache must be deleted so the next start doesn't hit it again", Storage.getString("config"))
+        assertNull("corrupt cache must be deleted so the next start doesn't hit it again", StorageManager.getString("config"))
         assertTrue("bundled config must be loaded as the fallback", LogManager.appenders.containsKey("cloud"))
         assertTrue(LogManager.appenders.containsKey("console"))
     }
 
     @Test
     fun validCachedConfigIsUsed() {
-        Storage.setString("config", customConfig)
+        StorageManager.setString("config", customConfig)
 
         SessionManager.login(application, "appId", "appKey", null, null)
 
         assertNotNull(SessionManager.login)
-        assertEquals(customConfig, Storage.getString("config"))
+        assertEquals(customConfig, StorageManager.getString("config"))
         assertTrue(LogManager.appenders.containsKey("cachedConsole"))
         assertFalse(LogManager.appenders.containsKey("cloud"))
     }

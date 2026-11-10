@@ -79,11 +79,10 @@ internal object SessionManager {
         this.sessionCompletion = completion
         login = Login(appId, appKey)
         loginFailedPermanently = false
-        Storage.init(application)
 
         // Config loading is isolated from login setup so a bad config can never leave the SDK without a Login and unable to ever connect.
         var loadedCachedConfig = false
-        val cachedConfig = Storage.getString(CONFIG_KEY)
+        val cachedConfig = StorageManager.getString(CONFIG_KEY)
         if (cachedConfig != null) {
             try {
                 readConfig(cachedConfig)
@@ -92,7 +91,7 @@ internal object SessionManager {
             catch (t: Throwable) {
                 // A config saved by another SDK version may no longer parse; treat it as absent instead of failing every start until app data is cleared.
                 InnerLog.w(TAG, "cached config is corrupt, deleting it and falling back to the default config", t)
-                Storage.remove(CONFIG_KEY)
+                StorageManager.remove(CONFIG_KEY)
             }
         }
         if (!loadedCachedConfig) {
@@ -129,7 +128,7 @@ internal object SessionManager {
                     sessionLink = loginResponse.sessionLink
                     sessionCompletion?.invoke(loginResponse.sessionUrl)
                     LogManager.config(loginResponse.config)
-                    Storage.setString(CONFIG_KEY, loginResponse.config.toJson().toString())
+                    StorageManager.setString(CONFIG_KEY, loginResponse.config.toJson().toString())
                     InternalEventBus.emitSessionEvent(SessionEvent.Connected)
                 }
                 catch (e: Throwable) {

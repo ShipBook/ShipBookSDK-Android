@@ -2,15 +2,14 @@ package io.shipbook.shipbooksdk
 
 import android.content.Context
 import android.content.SharedPreferences
+import io.shipbook.shipbooksdk.Networking.SessionManager
 
 // The SDK's own preferences file, never the app's default one, so its keys can't collide with the app's.
-internal object Storage {
+internal object StorageManager {
     private const val NAME = "io.shipbook.shipbooksdk"
-    private lateinit var prefs: SharedPreferences
-
-    fun init(context: Context) {
-        prefs = context.getSharedPreferences(NAME, Context.MODE_PRIVATE)
-    }
+    // Android caches the instance per name, so asking for it on each call is cheap.
+    private val prefs: SharedPreferences
+        get() = SessionManager.appContext!!.getSharedPreferences(NAME, Context.MODE_PRIVATE)
 
     fun getString(key: String): String? = prefs.getString(key, null)
 
