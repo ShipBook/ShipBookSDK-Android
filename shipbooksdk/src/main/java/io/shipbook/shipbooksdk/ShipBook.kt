@@ -10,7 +10,6 @@ import io.shipbook.shipbooksdk.Models.ScreenEvent
 import io.shipbook.shipbooksdk.Networking.ConnectionClient
 
 import io.shipbook.shipbooksdk.Networking.SessionManager
-import java.net.URI
 
 
 /*
@@ -30,12 +29,11 @@ class ShipBook {
          * @param appId The app id. You get it from https://console.shipbook.io.
          * @param appKey The app key. You get it from https://console.shipbook.io.
          * @param completion a completion of start callback so that you'll be able to get the sessionUrl if needed for 3rd party integration
-         * @param uri The url of the server. By default it goes to the Shipboook production server.
          */
         @JvmStatic
         @JvmOverloads
-        fun start(application: Application, appId: String, appKey: String, completion: ((String)->Unit)? = null, uri: URI? = null) {
-            SessionManager.login(application, appId, appKey, completion, uri)
+        fun start(application: Application, appId: String, appKey: String, completion: ((String)->Unit)? = null) {
+            SessionManager.login(application, appId, appKey, completion)
         }
 
         /**

@@ -43,7 +43,7 @@ class SessionManagerTest {
     fun corruptCachedConfigIsDiscardedAndLoginStillHappens() {
         StorageManager.setString("config", "not json")
 
-        SessionManager.login(application, "appId", "appKey", null, null)
+        SessionManager.login(application, "appId", "appKey", null)
 
         assertNotNull("login must be set up even when the cached config is unreadable", SessionManager.login)
         assertNull("corrupt cache must be deleted so the next start doesn't hit it again", StorageManager.getString("config"))
@@ -55,7 +55,7 @@ class SessionManagerTest {
     fun validCachedConfigIsUsed() {
         StorageManager.setString("config", customConfig)
 
-        SessionManager.login(application, "appId", "appKey", null, null)
+        SessionManager.login(application, "appId", "appKey", null)
 
         assertNotNull(SessionManager.login)
         assertEquals(customConfig, StorageManager.getString("config"))
@@ -65,7 +65,7 @@ class SessionManagerTest {
 
     @Test
     fun missingCachedConfigFallsBackToBundledConfig() {
-        SessionManager.login(application, "appId", "appKey", null, null)
+        SessionManager.login(application, "appId", "appKey", null)
 
         assertNotNull(SessionManager.login)
         assertTrue(LogManager.appenders.containsKey("cloud"))
