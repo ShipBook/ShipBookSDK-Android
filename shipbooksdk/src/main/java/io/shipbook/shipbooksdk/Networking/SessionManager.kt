@@ -11,7 +11,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import org.json.JSONObject
-import io.shipbook.shipbooksdk.Util.writeTextAtomically
 import java.io.File
 import java.io.InputStream
 import java.net.URI
@@ -28,6 +27,7 @@ import java.net.URI
 @OptIn(DelicateCoroutinesApi::class)
 internal object SessionManager {
     private const val SESSION_LINK_HEADER = "x-shipbook-session"
+    private const val CONFIG_KEY = "config"
 
     val threadContext = newSingleThreadContext("shipbook") // need this so that there is no problem of threading
                                                                  // kotlin will redo this implementation in the future and then we will need to change
@@ -57,7 +57,6 @@ internal object SessionManager {
         }
 
     var user: User? = null
-    var configFile: File? = null
 
     @Volatile
     var isInLoginRequest = false
@@ -80,19 +79,19 @@ internal object SessionManager {
         this.sessionCompletion = completion
         login = Login(appId, appKey)
         loginFailedPermanently = false
-        configFile = File(appContext!!.filesDir, "config.json")
 
         // Config loading is isolated from login setup so a bad config can never leave the SDK without a Login and unable to ever connect.
         var loadedCachedConfig = false
-        if (configFile!!.isFile && configFile!!.length() > 0) {
+        val cachedConfig = StorageManager.getString(CONFIG_KEY)
+        if (cachedConfig != null) {
             try {
-                readConfig(configFile!!)
+                readConfig(cachedConfig)
                 loadedCachedConfig = true
             }
             catch (t: Throwable) {
-                // A crash or power loss mid-write leaves garbage here; treat it as absent instead of failing every start until app data is cleared.
+                // A config saved by another SDK version may no longer parse; treat it as absent instead of failing every start until app data is cleared.
                 InnerLog.w(TAG, "cached config is corrupt, deleting it and falling back to the default config", t)
-                configFile!!.delete()
+                StorageManager.remove(CONFIG_KEY)
             }
         }
         if (!loadedCachedConfig) {
@@ -129,7 +128,7 @@ internal object SessionManager {
                     sessionLink = loginResponse.sessionLink
                     sessionCompletion?.invoke(loginResponse.sessionUrl)
                     LogManager.config(loginResponse.config)
-                    configFile!!.writeTextAtomically(loginResponse.config.toJson().toString())
+                    StorageManager.setString(CONFIG_KEY, loginResponse.config.toJson().toString())
                     InternalEventBus.emitSessionEvent(SessionEvent.Connected)
                 }
                 catch (e: Throwable) {
