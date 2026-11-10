@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Shop</string>
+    <string name="orders">My orders</string>
+    <string name="order_title">Order #%1$s</string>
+    <string name="deliver_to">Deliver to</string>
+    <string name="pick_up_at">Pick up at</string>
+    <string name="address">%1$s, %2$s</string>
+    <string name="total">Total</string>
+    <string name="track_order">Track order</string>
+    <string name="arriving">Arriving today at %1$s</string>
+</resources>
