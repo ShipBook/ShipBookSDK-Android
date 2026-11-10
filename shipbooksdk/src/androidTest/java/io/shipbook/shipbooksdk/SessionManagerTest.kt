@@ -4,7 +4,9 @@ import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import io.shipbook.shipbooksdk.Networking.ConnectionClient
 import io.shipbook.shipbooksdk.Networking.SessionManager
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -14,6 +16,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SessionManagerTest {
     private lateinit var application: Application
+    private val productionUrl = ConnectionClient.baseUrl
 
     private val customConfig = """
         {
@@ -28,10 +31,14 @@ class SessionManagerTest {
         SessionManager.application = application
         StorageManager.remove("config")
         LogManager.clear()
+        // A closed port: the test app may use the network since ControlPlaneTest, and these logins must stay off the real server.
+        ConnectionClient.baseUrl = "http://127.0.0.1:1/"
     }
 
     @After
     fun tearDown() {
+        runBlocking(SessionManager.threadContext) {}
+        ConnectionClient.baseUrl = productionUrl
         LogManager.clear()
         SessionManager.login = null
         SessionManager.token = null

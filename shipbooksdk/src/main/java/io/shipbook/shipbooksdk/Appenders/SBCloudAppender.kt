@@ -110,6 +110,7 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
     }
 
     fun saveToFile(obj: BaseObj) {
+        if (SessionManager.paused) return
         try {
             if (file.length() > maxFileSize) {
                 file.delete()
@@ -198,6 +199,7 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
     }
 
     override fun push(log: BaseLog) {
+        if (SessionManager.paused) return
         GlobalScope.launch(SessionManager.threadContext) {
             when (log) {
                 is Message -> push(log)
@@ -275,6 +277,10 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
             try {
                 val response = request("sessions/uploadSavedData", sessionsData, HttpMethod.POST)
                 if (response.ok) tempFile.delete()
+                else if (SessionManager.requestsBlocked) {
+                    InnerLog.i(TAG, "the answer stopped the SDK from sending, keeping what was saved for later")
+                    concatTmpFile()
+                }
                 else {
                     when (response.statusCode) {
                         -1 -> {

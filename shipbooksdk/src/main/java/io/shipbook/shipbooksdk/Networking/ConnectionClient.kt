@@ -1,8 +1,10 @@
 package io.shipbook.shipbooksdk.Networking
 
+import io.shipbook.shipbooksdk.BuildConfig
 import io.shipbook.shipbooksdk.InnerLog
 import io.shipbook.shipbooksdk.Models.BaseObj
 import io.shipbook.shipbooksdk.Models.ErrorResponse
+import io.shipbook.shipbooksdk.Models.Pause
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -51,9 +53,12 @@ internal object ConnectionClient {
 
     @Suppress("RedundantSuspendModifier")
     suspend fun request(url: String, data: String?, method:HttpMethod = HttpMethod.GET) : ResponseData {
+        if (SessionManager.requestsBlocked) return ResponseData(false, 429)
+
         val urlString = "$baseUrl$url"
         InnerLog.d(TAG, "the url: $urlString")
         val obj = URL(urlString)
+        val appId = SessionManager.login?.appId
         try {
             with(obj.openConnection() as HttpURLConnection) {
                 requestMethod = method.value
@@ -62,6 +67,8 @@ internal object ConnectionClient {
                 SessionManager.token?.let {
                     setRequestProperty("Authorization", "Bearer $it")
                 }
+                setRequestProperty("x-shipbook-sdk", "android/${BuildConfig.VERSION_NAME}")
+                appId?.let { setRequestProperty("x-shipbook-app-id", it) }
 
                 data?.let {
                     InnerLog.d(TAG, "Sending output : $data")
@@ -72,6 +79,11 @@ internal object ConnectionClient {
 
                 InnerLog.i(TAG, "Response Code : $responseCode")
                 val ok = responseCode in 200..299
+
+                // Read before the body: a layer in front of the server may answer with a body that isn't JSON, or with none.
+                val pauseSeconds = Pause.pauseSeconds(responseCode, getHeaderField("x-shipbook-pause"))
+                if (pauseSeconds != null) SessionManager.pause(appId!!, responseCode, pauseSeconds)
+                else Pause.backOffSeconds(responseCode, getHeaderField("Retry-After"))?.let { SessionManager.backOff(responseCode, it) }
 
                 val stream = if (!ok) errorStream else inputStream
                 val responseDataString = stream.bufferedReader().use { it.readText() }
