@@ -11,6 +11,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import org.json.JSONObject
+import io.shipbook.shipbooksdk.Util.toStandardString
+import java.util.Date
 
 
 /*
@@ -25,6 +27,7 @@ import org.json.JSONObject
 internal object SessionManager {
     private const val SESSION_LINK_HEADER = "x-shipbook-session"
     private const val CONFIG_KEY = "config"
+    private const val PAUSE_KEY = "pause"
 
     val threadContext = newSingleThreadContext("shipbook") // need this so that there is no problem of threading
                                                                  // kotlin will redo this implementation in the future and then we will need to change
@@ -39,6 +42,8 @@ internal object SessionManager {
     var token: String? = null
     @Volatile
     var sessionLink: String? = null
+    @Volatile
+    var sessionUrl: String? = null
 
     var sessionCompletion: ((String)->Unit)? = null
 
@@ -62,8 +67,23 @@ internal object SessionManager {
     @Volatile
     private var loginFailedPermanently = false
 
+    @Volatile
+    var pausedUntil = 0L
+    val paused: Boolean
+        get() = System.currentTimeMillis() < pausedUntil
+
+    // Unlike a pause it is never saved and drops nothing: the server is busy, it isn't refusing this app.
+    @Volatile
+    var backOffUntil = 0L
+    val backingOff: Boolean
+        get() = System.currentTimeMillis() < backOffUntil
+
+    val requestsBlocked: Boolean
+        get() = paused || backingOff
+
     val connected: Boolean
         get() {
+            if (requestsBlocked) return false
             if (token != null) return true
             if (loginFailedPermanently) return false
             innerLogin()
@@ -71,11 +91,31 @@ internal object SessionManager {
         }
 
     fun login(application: Application, appId: String, appKey: String, completion: ((String)->Unit)?) {
+        if (login?.appId == appId && this.appKey == appKey) {
+            if (completion == null) return
+            // The login answer takes the same lock, so each completion gets a session URL exactly once.
+            val knownSessionUrl = synchronized(this) {
+                sessionCompletion = completion
+                sessionUrl
+            }
+            knownSessionUrl?.let { completion(it) }
+            return
+        }
+
         this.application = application
         this.appKey = appKey
         this.sessionCompletion = completion
         login = Login(appId, appKey)
         loginFailedPermanently = false
+        // The login below is held back while paused or backing off; the previous app's session must not outlive it.
+        token = null
+        sessionLink = null
+        sessionUrl = null
+        val storedPause = StorageManager.getString(PAUSE_KEY)
+        val pause = storedPause?.let { Pause.load(it, appId, BuildConfig.VERSION_NAME, System.currentTimeMillis()) }
+        if (storedPause != null && pause == null) StorageManager.remove(PAUSE_KEY)
+        pausedUntil = pause?.until ?: 0
+        if (pause != null) InnerLog.w(TAG, "paused until ${Date(pause.until).toStandardString()} (from an earlier run); nothing will be sent")
 
         // Config loading is isolated from login setup so a bad config can never leave the SDK without a Login and unable to ever connect.
         var loadedCachedConfig = false
@@ -98,10 +138,11 @@ internal object SessionManager {
     }
 
     private fun innerLogin() {
-        if (isInLoginRequest || login == null || loginFailedPermanently) return
+        if (isInLoginRequest || login == null || loginFailedPermanently || requestsBlocked) return
         isInLoginRequest = true
         token = null
         sessionLink = null
+        sessionUrl = null
         GlobalScope.launch(threadContext) {
             InnerLog.d(TAG, "current thread: ${Thread.currentThread().name}")
             val response = ConnectionClient.request("auth/loginSdk", login?.toJson().toString(), HttpMethod.POST)
@@ -116,7 +157,11 @@ internal object SessionManager {
                     };
                     token = loginResponse.token
                     sessionLink = loginResponse.sessionLink
-                    sessionCompletion?.invoke(loginResponse.sessionUrl)
+                    val completion = synchronized(SessionManager) {
+                        sessionUrl = loginResponse.sessionUrl
+                        sessionCompletion
+                    }
+                    completion?.invoke(loginResponse.sessionUrl)
                     LogManager.config(loginResponse.config)
                     StorageManager.setString(CONFIG_KEY, loginResponse.config.toJson().toString())
                     InternalEventBus.emitSessionEvent(SessionEvent.Connected)
@@ -125,8 +170,8 @@ internal object SessionManager {
                     InnerLog.e(TAG, "There was a problem with the data", e)
                 }
             }
-            else if (response.statusCode in 400..499) {
-                // 4xx on loginSdk = integration error (bad appId/appKey, app deleted). Retrying won't help — stop until the app is restarted or logout/login is called.
+            else if (response.statusCode in 400..499 && !requestsBlocked) {
+                // 4xx on loginSdk = integration error (bad appId/appKey, app deleted). Retrying won't help — stop until the app is restarted or started with other credentials.
                 loginFailedPermanently = true
                 InnerLog.e(TAG, "loginSdk rejected with ${response.statusCode} — check appId/appKey. Will not retry until next app start.")
             }
@@ -173,7 +218,7 @@ internal object SessionManager {
         val response = ConnectionClient.request("auth/refreshSdkToken", refreshToken.toJson().toString(), HttpMethod.POST)
         try {
             if (!response.ok) {
-                if (response.statusCode in 400..499) {
+                if (response.statusCode in 400..499 && !requestsBlocked) {
                     // 4xx on refresh = integration error (app deleted, wrong appKey, bad JWT). Same as loginSdk failure — stop retrying until next app start instead of falling through to a fresh loginSdk that would 4xx too.
                     loginFailedPermanently = true
                     InnerLog.e(TAG, "refreshSdkToken rejected with ${response.statusCode} — check appId/appKey. Will not retry until next app start.")
@@ -196,6 +241,23 @@ internal object SessionManager {
         finally {
             isInLoginRequest = false
         }
+    }
+
+    fun pause(appId: String, statusCode: Int, seconds: Long) {
+        // The answer is for the app that sent the request; a start() with another appId may have replaced it since.
+        if (appId != login?.appId) return
+        val pause = Pause(appId, BuildConfig.VERSION_NAME, System.currentTimeMillis() + seconds * 1000)
+        InnerLog.w(TAG, "paused until ${Date(pause.until).toStandardString()}: the server answered $statusCode with x-shipbook-pause $seconds")
+        pausedUntil = pause.until
+        token = null
+        sessionLink = null
+        sessionUrl = null
+        StorageManager.setString(PAUSE_KEY, pause.toJson().toString())
+    }
+
+    fun backOff(statusCode: Int, seconds: Long) {
+        backOffUntil = System.currentTimeMillis() + seconds * 1000
+        InnerLog.w(TAG, "backing off until ${Date(backOffUntil).toStandardString()}: the server answered $statusCode")
     }
 
     // Empty until login completes and on silenced devices, so callers can always add it.

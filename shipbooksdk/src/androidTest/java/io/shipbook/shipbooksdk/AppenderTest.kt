@@ -69,4 +69,44 @@ class AppenderTest {
 //        assertEquals(sessionsData, sessionsDataRet)
 
     }
+
+    @Test
+    fun cloudAppenderBuffersNothingWhilePaused() {
+        SessionManager.application = ApplicationProvider.getApplicationContext<Context>() as Application
+        val cloudAppender = SBCloudAppender("cloud", null)
+        cloudAppender.file.delete()
+
+        SessionManager.pausedUntil = System.currentTimeMillis() + 60_000
+        try {
+            cloudAppender.saveToFile(Message(Severity.Error, "dropped"))
+        }
+        finally {
+            SessionManager.pausedUntil = 0
+            cloudAppender.terminate()
+        }
+
+        assertFalse(cloudAppender.file.exists())
+    }
+
+    @Test
+    fun cloudAppenderKeepsBufferingWhileBackingOff() {
+        SessionManager.application = ApplicationProvider.getApplicationContext<Context>() as Application
+        val cloudAppender = SBCloudAppender("cloud", null)
+        cloudAppender.file.delete()
+        SessionManager.token = "testing"
+        val log = Message(Severity.Error, "kept")
+
+        SessionManager.backOffUntil = System.currentTimeMillis() + 60_000
+        try {
+            cloudAppender.saveToFile(log)
+        }
+        finally {
+            SessionManager.backOffUntil = 0
+            SessionManager.token = null
+            cloudAppender.terminate()
+        }
+
+        assertEquals(listOf<BaseLog>(log), cloudAppender.loadFromFile(cloudAppender.file).single().logs)
+        cloudAppender.file.delete()
+    }
 }
