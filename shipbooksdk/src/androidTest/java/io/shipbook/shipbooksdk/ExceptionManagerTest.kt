@@ -17,6 +17,10 @@ class ExceptionManagerTest {
         fun onResume(): Nothing = throw NullPointerException()
     }
 
+    class SyncService {
+        fun sync(cause: Throwable): Nothing = throw IllegalStateException("Order sync failed", cause)
+    }
+
     private val originalHandler = Thread.getDefaultUncaughtExceptionHandler()
     private var forwarded: Throwable? = null
     private val appender = LogManagerTest.TestAppender("test", null)
@@ -88,9 +92,38 @@ class ExceptionManagerTest {
     }
 
     @Test
+    fun appExceptionWrappingFrameworkExceptionReportsAppException() {
+        val timeout = java.net.SocketTimeoutException("timeout").apply {
+            stackTrace = arrayOf(java.lang.StackTraceElement("java.net.SocketInputStream", "read", "SocketInputStream.java", 170))
+        }
+        val syncFailed = runCatching { SyncService().sync(timeout) }.exceptionOrNull()!!
+
+        val exception = crash(syncFailed)
+
+        assertEquals("java.lang.IllegalStateException", exception.name)
+        assertEquals("Order sync failed", exception.reason)
+        assertEquals(SyncService::class.java.name, exception.stackTrace[0].declaringClass)
+        assertEquals("sync", exception.stackTrace[0].methodName)
+    }
+
+    @Test
+    fun noAppFramesAnywhereReportsRootCause() {
+        val inner = IllegalArgumentException("inner").apply {
+            stackTrace = arrayOf(java.lang.StackTraceElement("java.util.ArrayList", "get", "ArrayList.java", 437))
+        }
+        val wrapper = activityThreadWrapper("Unable to start activity", inner)
+
+        val exception = crash(wrapper)
+
+        assertEquals("java.lang.IllegalArgumentException", exception.name)
+        assertEquals("inner", exception.reason)
+    }
+
+    @Test
     fun causeCycleStopsAtLastUnvisitedThrowable() {
-        val outer = IllegalStateException("outer")
-        val inner = IllegalArgumentException("inner")
+        val frameworkOnly = arrayOf(java.lang.StackTraceElement("java.util.ArrayList", "get", "ArrayList.java", 437))
+        val outer = IllegalStateException("outer").apply { stackTrace = frameworkOnly }
+        val inner = IllegalArgumentException("inner").apply { stackTrace = frameworkOnly }
         outer.initCause(inner)
         inner.initCause(outer)
 
