@@ -12,7 +12,7 @@ import io.shipbook.shipbooksdk.Util.toInternal
 
 internal object ExceptionManager {
     private val TAG = ExceptionManager::class.java.simpleName
-    private val frameworkPrefixes = listOf("android.", "java.", "com.android.", "androidx.")
+    private val frameworkPrefixes = listOf("android.", "java.", "com.android.", "androidx.", "kotlin.", "kotlinx.", "dalvik.")
     fun start(hasException: Boolean = true) {
         if (!hasException)
             return

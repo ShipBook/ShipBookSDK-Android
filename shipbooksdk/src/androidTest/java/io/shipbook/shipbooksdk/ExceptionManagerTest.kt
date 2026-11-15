@@ -107,6 +107,35 @@ class ExceptionManagerTest {
     }
 
     @Test
+    fun dalvikLifecycleWrapperReportsRootCause() {
+        val npe = runCatching { OrderActivity().onCreate() }.exceptionOrNull()!!
+        val wrapper = activityThreadWrapper("Unable to start activity", npe).apply {
+            stackTrace += java.lang.StackTraceElement("dalvik.system.NativeStart", "main", "NativeStart.java", -2)
+        }
+
+        val exception = crash(wrapper)
+
+        assertEquals("java.lang.NullPointerException", exception.name)
+        assertEquals("onCreate", exception.stackTrace[0].methodName)
+    }
+
+    @Test
+    fun kotlinFramesAreNotAppFrames() {
+        val npe = runCatching { OrderActivity().onCreate() }.exceptionOrNull()!!
+        val wrapper = IllegalStateException("Coroutine failed", npe).apply {
+            stackTrace = arrayOf(
+                java.lang.StackTraceElement("kotlinx.coroutines.DispatchedTask", "run", "DispatchedTask.kt", 108),
+                java.lang.StackTraceElement("kotlin.coroutines.jvm.internal.BaseContinuationImpl", "resumeWith", "ContinuationImpl.kt", 33)
+            )
+        }
+
+        val exception = crash(wrapper)
+
+        assertEquals("java.lang.NullPointerException", exception.name)
+        assertEquals("onCreate", exception.stackTrace[0].methodName)
+    }
+
+    @Test
     fun noAppFramesAnywhereReportsRootCause() {
         val inner = IllegalArgumentException("inner").apply {
             stackTrace = arrayOf(java.lang.StackTraceElement("java.util.ArrayList", "get", "ArrayList.java", 437))
