@@ -12,6 +12,7 @@ import io.shipbook.shipbooksdk.Util.toInternal
 
 internal object ExceptionManager {
     private val TAG = ExceptionManager::class.java.simpleName
+    private val frameworkPrefixes = listOf("android.", "java.", "com.android.", "androidx.", "kotlin.", "kotlinx.", "dalvik.")
     fun start(hasException: Boolean = true) {
         if (!hasException)
             return
@@ -20,8 +21,11 @@ internal object ExceptionManager {
 
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             InnerLog.e(TAG,"catch uncaught exception")
-            val stackTrace = throwable.stackTrace.toInternal()
-            val exception = Exception(throwable.javaClass.name, throwable.message, stackTrace)
+            // ActivityThread wraps lifecycle crashes in a throwable with no app frames, so report the first one in the chain that has them.
+            val seen = HashSet<Throwable>()
+            val chain = generateSequence(throwable) { it.cause }.takeWhile { seen.add(it) }.toList()
+            val reported = chain.firstOrNull { t -> t.stackTrace.any { frame -> frameworkPrefixes.none { frame.className.startsWith(it) } } } ?: chain.last()
+            val exception = Exception(reported.javaClass.name, reported.message ?: throwable.message, reported.stackTrace.toInternal())
             LogManager.push(exception)
 
             if (oldHandler != null) oldHandler.uncaughtException(thread, throwable)

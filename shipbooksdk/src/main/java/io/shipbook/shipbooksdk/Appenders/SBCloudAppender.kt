@@ -16,7 +16,10 @@ import org.json.JSONObject
 import java.io.File
 import java.lang.Exception
 import java.util.*
+import java.util.concurrent.FutureTask
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import kotlin.concurrent.timerTask
 
 /*
@@ -198,11 +201,19 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
     }
 
     override fun push(log: BaseLog) {
+        if (log is io.shipbook.shipbooksdk.Models.Exception) {
+            // The uncaught handler kills the process right after this, so the crash must be on disk before returning.
+            val save = FutureTask { push(log) }
+            SessionManager.threadContext.executor.execute(save)
+            try { save.get(2, TimeUnit.SECONDS) }
+            catch (e: TimeoutException) { if (save.cancel(false)) push(log) else save.get() }
+            return
+        }
+
         GlobalScope.launch(SessionManager.threadContext) {
             when (log) {
                 is Message -> push(log)
                 is BaseEvent -> push(log)
-                is io.shipbook.shipbooksdk.Models.Exception -> push(log)
             }
         }
     }
