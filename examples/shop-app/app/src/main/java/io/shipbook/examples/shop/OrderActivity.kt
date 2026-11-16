@@ -17,17 +17,22 @@ class OrderActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.items).text = order.items
         findViewById<TextView>(R.id.total).text = order.total
         val where = findViewById<TextView>(R.id.where)
+        val track = findViewById<Button>(R.id.track)
         if (order.fulfillment == Fulfillment.PICKUP) {
             findViewById<TextView>(R.id.whereLabel).setText(R.string.pick_up_at)
             where.text = order.store
+            track.isEnabled = false
         } else {
-            where.text = getString(R.string.address, order.address?.street, order.address?.city)
-        }
-
-        findViewById<Button>(R.id.track).setOnClickListener {
-            Log.i(TAG, "Tracking order ${order.id}")
-            val destination = order.address!!
-            findViewById<TextView>(R.id.tracking).text = getString(R.string.arriving, destination.street)
+            val destination = order.address
+            where.text = getString(R.string.address, destination?.street, destination?.city)
+            if (destination != null) {
+                track.setOnClickListener {
+                    Log.i(TAG, "Tracking order ${order.id}")
+                    findViewById<TextView>(R.id.tracking).text = getString(R.string.arriving, destination.street)
+                }
+            } else {
+                track.isEnabled = false
+            }
         }
     }
 
