@@ -1,0 +1,42 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+def localProps = new Properties()
+def localPropsFile = rootProject.file('local.properties')
+if (localPropsFile.exists()) localPropsFile.withInputStream { localProps.load(it) }
+
+android {
+    namespace 'io.shipbook.examples.shop'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'io.shipbook.examples.shop'
+        minSdk 26
+        targetSdk 34
+        versionCode 12
+        versionName '2.4.0'
+        buildConfigField 'String', 'SHIPBOOK_APP_ID', "\"${localProps.getProperty('SHIPBOOK_APP_ID', '')}\""
+        buildConfigField 'String', 'SHIPBOOK_APP_KEY', "\"${localProps.getProperty('SHIPBOOK_APP_KEY', '')}\""
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+dependencies {
+    implementation 'io.shipbook:shipbooksdk:1.10.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    testImplementation 'junit:junit:4.13.2'
+}
