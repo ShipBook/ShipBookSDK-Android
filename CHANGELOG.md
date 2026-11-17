@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.0
+- Upgrade to get an SDK that follows the Shipbook server: it stops sending when the server refuses your app or is busy, and calling `ShipBook.start` again costs nothing.
+- The SDK obeys the server. If the server refuses the app (an unknown app ID, or traffic far past fair use), the SDK pauses: it sends nothing and drops new logs until the pause ends, at most 30 days and across restarts. If the server or a proxy answers busy (429 or 503), it waits (the `Retry-After` time, 5 minutes without one, at most an hour) and sends the saved logs afterwards. `ShipBook.enableInnerLog(true)` prints `paused until …` or `backing off until …`.
+- Every request carries `x-shipbook-app-id` and `x-shipbook-sdk: android/2.0.0`.
+- Calling `ShipBook.start` again with the same app ID and key keeps the current session. A completion passed then replaces the earlier one, and is called at once if login already finished.
+- Fixed: a crash in an Activity, Service or receiver lifecycle method (`onCreate`, `onResume`, …) is now reported as your own exception, with your file and line. Before, it showed as Android's `Unable to start activity` wrapper, and all such crashes fell into one Loglytics issue.
+- Fixed: a crash could be lost when the app died before it was saved. It is now written to disk before the crash handler returns.
+- Removed the `uri` parameter of `ShipBook.start`, which read a config file nobody passed.
+
 ## 1.10.0
 - Added `ShipBook.getSessionHeaders()`. Add its headers to requests toward your own backend, and the Shipbook console links this app session to the sessions those requests create in your Node.js backend. It returns an empty map until login completes, so adding it is always safe.
 
