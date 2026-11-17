@@ -26,6 +26,9 @@ class ShipBook {
     companion object {
         /**
          * Starts the shipbook SDK should be called in `application(_:didFinishLaunchingWithOptions:)`
+         *
+         * Calling it again with the same appId and appKey keeps the current session. A completion passed then replaces the
+         * earlier one, and is called at once with the session url when login already finished.
          * @param appId The app id. You get it from https://console.shipbook.io.
          * @param appKey The app key. You get it from https://console.shipbook.io.
          * @param completion a completion of start callback so that you'll be able to get the sessionUrl if needed for 3rd party integration
