@@ -10,7 +10,7 @@ Add to your `build.gradle`:
 
 ```groovy
 dependencies {
-    implementation 'io.shipbook:shipbooksdk:1.+'
+    implementation 'io.shipbook:shipbooksdk:2.+'
 }
 ```
 
