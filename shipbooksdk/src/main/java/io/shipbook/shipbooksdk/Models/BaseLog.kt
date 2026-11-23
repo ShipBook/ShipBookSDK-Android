@@ -30,7 +30,6 @@ abstract class BaseLog(val type: String,
             return when (type) {
                 "message" -> Message.create(json, orderId, time, threadInfo)
                 "activityEvent" -> ActivityEvent.create(json, orderId, time, threadInfo)
-                "fragmentEvent" -> FragmentEvent.create(json, orderId, time, threadInfo)
                 "configEvent" -> ConfigEvent.create(json, orderId, time, threadInfo)
                 "actionEvent" -> ActionEvent.create(json, orderId, time, threadInfo)
                 "screenEvent" -> ScreenEvent.create(json, orderId, time, threadInfo)
