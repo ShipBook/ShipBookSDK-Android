@@ -19,11 +19,12 @@ import io.shipbook.shipbooksdk.Networking.SessionManager
 
 internal object EventManager {
     private val TAG = EventManager::class.java.simpleName
-    init {
-
-    }
+    private var started = false
 
     fun start() {
+        // ShipBook.start with another app reads the config again; the callbacks must not be registered a second time.
+        if (started) return
+        started = true
         SessionManager.application?.registerActivityLifecycleCallbacks(ActivityEventCallbacks)
         SessionManager.application?.registerComponentCallbacks(ComponentCallbacks())
         InnerLog.i(TAG, "Current configuration: ${SessionManager.appContext?.resources?.configuration}")

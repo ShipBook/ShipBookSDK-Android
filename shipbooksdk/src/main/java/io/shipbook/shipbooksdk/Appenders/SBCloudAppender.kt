@@ -171,8 +171,9 @@ internal class SBCloudAppender(name: String, config: Config?): BaseAppender(name
                         sessionLogData = SessionLogData(token = classJson)
                     }
                     baseLogName -> {
-                        val log = BaseLog.create(JSONObject(classJson))
-                        sessionLogData?.logs?.add(log)
+                        val json = JSONObject(classJson)
+                        // A file saved by an SDK up to 2.0.0 can hold fragment events, which the server does not take.
+                        if (json.optString("type") != "fragmentEvent") sessionLogData?.logs?.add(BaseLog.create(json))
                     }
                     userName -> {
                         val user = User.create(JSONObject(classJson))

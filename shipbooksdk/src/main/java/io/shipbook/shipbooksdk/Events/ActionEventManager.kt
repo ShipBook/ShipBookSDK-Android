@@ -1,7 +1,6 @@
 package io.shipbook.shipbooksdk.Events
 
 import android.text.Editable
-import android.text.InputType
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +12,8 @@ import io.shipbook.shipbooksdk.Util.onCheckedChangeListener
 import io.shipbook.shipbooksdk.Util.onClickListener
 import io.shipbook.shipbooksdk.Util.onSeekBarChangeListener
 import io.shipbook.shipbooksdk.Util.views
+import java.util.Collections
+import java.util.WeakHashMap
 
 /*
  *
@@ -24,6 +25,9 @@ import io.shipbook.shipbooksdk.Util.views
 internal object ActionEventManager {
     private val TAG = ActionEventManager::class.java.simpleName
     var ignoreViews = emptySet<Int>()
+    // A text watcher can't be read back from its view, so the fields that have one are remembered here.
+    private val watchedTexts = Collections.newSetFromMap(WeakHashMap<EditText, Boolean>())
+
     private fun createActionEvent(action: String, title: String, view: View) {
         val sender = view.javaClass.simpleName
         val actionEvent = ActionEvent(action, sender, title, "")
@@ -32,25 +36,52 @@ internal object ActionEventManager {
 
     }
 
+    // Views are registered on every activity start, so each wrapper is a class of its own: a view that already carries one is left alone.
+    private class ClickListener(val wrapped: View.OnClickListener?) : View.OnClickListener {
+        override fun onClick(view: View) {
+            createActionEvent("onClick", (view as Button).text.toString(), view)
+            wrapped?.onClick(view)
+        }
+    }
+
+    private class CheckedChangeListener(val wrapped: CompoundButton.OnCheckedChangeListener?) : CompoundButton.OnCheckedChangeListener {
+        override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
+            createActionEvent("onCheckedChange", buttonView.text.toString(), buttonView)
+            wrapped?.onCheckedChanged(buttonView, isChecked)
+        }
+    }
+
+    private class SeekBarChangeListener(val wrapped: SeekBar.OnSeekBarChangeListener?) : SeekBar.OnSeekBarChangeListener {
+        override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+            if (fromUser) createActionEvent("progressChanged", "", seekBar)
+            wrapped?.onProgressChanged(seekBar, progress, fromUser)
+        }
+
+        override fun onStartTrackingTouch(seekBar: SeekBar) {
+            wrapped?.onStartTrackingTouch(seekBar)
+        }
+
+        override fun onStopTrackingTouch(seekBar: SeekBar) {
+            wrapped?.onStopTrackingTouch(seekBar)
+        }
+    }
+
     private fun registerView(view: View) {
         if (ignoreViews.contains(view.id)) return
         when (view) {
             is ViewGroup -> registerViews(view)
             is CompoundButton -> {
                 val onCheckedChangeListener = view.onCheckedChangeListener
-                view.setOnCheckedChangeListener {  buttonView, isChecked ->
-                    createActionEvent("onCheckedChange", view.text.toString(), view)
-                    onCheckedChangeListener?.onCheckedChanged(buttonView, isChecked)
-                }
+                if (onCheckedChangeListener is CheckedChangeListener) return
+                view.setOnCheckedChangeListener(CheckedChangeListener(onCheckedChangeListener))
             }
             is Button -> {
                 val onClickListener = view.onClickListener
-                view.setOnClickListener {
-                    createActionEvent("onClick", view.text.toString(), it)
-                    onClickListener?.onClick(view)
-                }
+                if (onClickListener is ClickListener) return
+                view.setOnClickListener(ClickListener(onClickListener))
             }
             is EditText -> {
+                if (!watchedTexts.add(view)) return
                 view.addTextChangedListener(object: TextWatcher {
                     override fun afterTextChanged(s: Editable?) {
                     }
@@ -59,32 +90,16 @@ internal object ActionEventManager {
                     }
 
                     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                        if (view.inputType and InputType.TYPE_TEXT_VARIATION_PASSWORD == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
-                            InnerLog.d("actionEvent", "is password")
-                        }
-                        else createActionEvent("textChanged", s.toString(), view) //TODO: need to check that it isn't passing the password info
+                        // The text stays on the device: it can be a name, a card number or a password.
+                        createActionEvent("textChanged", "", view)
                     }
                 })
 
             }
             is SeekBar -> {
                 val onSeekBarChangeListener = view.onSeekBarChangeListener
-                view.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
-                    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                        createActionEvent("progessChanged", "", seekBar)
-                        onSeekBarChangeListener?.onProgressChanged(seekBar, progress, fromUser)
-                    }
-
-                    override fun onStartTrackingTouch(seekBar: SeekBar) {
-                        onSeekBarChangeListener?.onStartTrackingTouch(seekBar)
-                    }
-
-                    override fun onStopTrackingTouch(seekBar: SeekBar) {
-                        onSeekBarChangeListener?.onStopTrackingTouch(seekBar)
-                    }
-
-                })
-
+                if (onSeekBarChangeListener is SeekBarChangeListener) return
+                view.setOnSeekBarChangeListener(SeekBarChangeListener(onSeekBarChangeListener))
             }
             is Spinner -> {
                 val onItemSelectedListener = view.onItemSelectedListener
